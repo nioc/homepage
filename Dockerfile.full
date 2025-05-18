@@ -1,0 +1,55 @@
+####################################
+### build client
+FROM --platform=linux/arm64 node:lts-alpine AS client-build-stage
+
+WORKDIR /homepage-build
+
+# get package and install dependencies
+COPY package*.json ./
+RUN npm ci
+
+# copy src files (exluding files defined in .dockerignore)
+COPY src/ ./src/
+COPY index.html ./index.html
+COPY public/conf/app.yml.dist ./public/conf/app.yml
+COPY public/favicon.svg ./public/favicon.svg
+
+# copy tools and build scripts
+COPY build-icons.js ./build-icons.js
+COPY vite.config.js ./vite.config.js
+COPY svelte.config.js ./svelte.config.js
+COPY postcss.config.cjs ./postcss.config.cjs
+
+# build icons
+RUN npm run build-icons
+
+# build app
+ENV VITE_TITLE=Homepage
+RUN npm run build
+
+####################################
+### serve app
+FROM nginx:stable-alpine AS server-production-stage
+
+# set nginx conf
+COPY nginx/templates /etc/nginx/templates
+
+# use builded files
+COPY --from=client-build-stage /homepage-build/dist /usr/share/nginx/html/app
+
+# self document
+ENV NGINX_HOST=localhost
+ENV NGINX_PORT=80
+ENV NGINX_GZIP=off
+ENV NGINX_SSO_GROUPS_HEADER_NAME=Remote_Groups
+ENV NGINX_SSO_USER_HEADER_NAME=Remote_User
+EXPOSE 80
+ARG GIT_COMMIT=unspecified
+ARG BUILD_DATE
+LABEL org.label-schema.name="homepage"
+LABEL org.label-schema.vendor="nioc"
+LABEL org.label-schema.license="AGPL-3.0-or-later"
+LABEL org.label-schema.vcs-url="https://github.com/nioc/homepage"
+LABEL org.label-schema.vcs-ref=$GIT_COMMIT
+LABEL org.label-schema.build-date=$BUILD_DATE
+LABEL maintainer="nioc <dev@nioc.eu>"

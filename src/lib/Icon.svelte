@@ -1,0 +1,36 @@
+<script>
+  import { onMount } from 'svelte'
+  import defaultIcon from '../assets/defaultIcon.svg?raw'
+
+  export let icon
+  export let size = 1
+
+  let isReady = false
+  let svgElement
+  const svgSize = (18 * size).toString()
+
+  onMount(async () => {
+    try {
+      const svgText = await (await fetch(`icons/${icon}.svg`)).text()
+      const parser = new DOMParser()
+      let svgDoc = parser.parseFromString(svgText, 'image/svg+xml')
+      if (svgDoc.querySelector('parsererror')) {
+        svgDoc = parser.parseFromString(defaultIcon, 'image/svg+xml')
+      }
+      svgElement = svgDoc.documentElement
+      svgElement.setAttribute('width', svgSize)
+      svgElement.setAttribute('height', svgSize)
+      svgElement.setAttribute('aria-hidden', 'true')
+      isReady = true
+    } catch (error) {
+      console.error(error)
+    }
+  })
+</script>
+
+{#if isReady}
+  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+  {@html svgElement.outerHTML}
+{:else}
+  <svg width="{svgSize}" height="{svgSize}" />
+{/if}

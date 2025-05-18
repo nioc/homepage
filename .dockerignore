@@ -1,0 +1,11 @@
+.git
+.gitignore
+.github
+.dockerignore
+Dockerfile*
+node_modules
+stats.html
+public/icons
+public/conf/*.yml
+public/*.css
+screenshots

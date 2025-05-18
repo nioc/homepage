@@ -1,0 +1,30 @@
+server {
+    listen          ${NGINX_PORT};
+    server_name     ${NGINX_HOST};
+
+    gzip            ${NGINX_GZIP};
+    gzip_types      application/javascript text/css;
+
+    location = /conf/app.yml {
+        types { } default_type "application/yaml";
+        root   /usr/share/nginx/html;
+        sub_filter 'groupsAdditionalFiles:' 'groupsAdditionalFiles: $http_${NGINX_SSO_GROUPS_HEADER_NAME}';
+        sub_filter 'userAdditionalFile:' 'userAdditionalFile: $http_${NGINX_SSO_USER_HEADER_NAME}';
+        sub_filter_types application/yaml;
+    }
+
+    location ~* ^/conf/(.+).yml$ {
+        types { } default_type "application/yaml";
+        root   /usr/share/nginx/html;
+    }
+
+    location ~* ^/files/.*$ {
+        root   /usr/share/nginx/html;
+        try_files $uri $uri/;
+    }
+
+    location / {
+        root   /usr/share/nginx/html/app;
+        try_files $uri /index.html;
+    }
+}

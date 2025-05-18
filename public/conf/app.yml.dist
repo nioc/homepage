@@ -1,0 +1,41 @@
+title: Homepage demo
+# customCssUrl: custom.css
+# displayTitle: false
+# displaySearch: true
+# displayTags: false
+# backgroundImage: files/background.png
+# trianglifySeed: myseed
+# groupsAdditionalFiles: 
+# groupsAdditionalFilesPattern: ^(dev|admin)$
+# userAdditionalFile: 
+
+topics:
+
+- name: Admin
+  order: 1
+  links:
+
+  - name: Portainer
+    order: 1
+    icon: portainer
+    href: https://localhost:9443/
+    target: _blank
+    tags:
+    - docker
+    - container
+
+- name: Links
+  order: 2
+  links:
+
+  - name: Homepage repo
+    icon: github
+    href: https://github.com/nioc/homepage
+    target: repo
+    tags:
+    - code
+
+  - name: This page :)
+    iconUrl: favicon.svg
+    href: /
+    target: _self

@@ -1,0 +1,208 @@
+@charset "utf-8";
+@use "pkg:@picocss/pico/scss/pico" 
+with (
+    $theme-color: "sand",
+    $semantic-root-element: "#app",
+    $enable-responsive-typography: false,
+    $enable-viewport: true,
+    $enable-semantic-container: true,
+    $enable-classes: false,
+    $modules: (
+        // Theme
+        // "themes/default": true,
+
+        // Layout
+        // "layout/document": true,
+        // "layout/landmarks": true,
+        "layout/container": false,
+        "layout/section": false,
+        "layout/grid": false,
+        "layout/overflow-auto": false,
+
+        // Content
+        "content/link": false,
+        // "content/typography": true,
+        "content/embedded": false,
+        // "content/button": true,
+        "content/table": false,
+        "content/code": false,
+        "content/figure": false,
+        "content/miscs": false,
+
+        // Forms
+        // "forms/basics": true,
+        "forms/checkbox-radio-switch": false,
+        "forms/input-color": false,
+        "forms/input-date": false,
+        "forms/input-file": false,
+        "forms/input-range": false,
+        // "forms/input-search": true,
+
+        // Components
+        "components/accordion": false,
+        "components/card": false,
+        "components/dropdown": false,
+        "components/group": false,
+        "components/loading": false,
+        "components/modal": false,
+        "components/nav": false,
+        "components/progress": false,
+        "components/tooltip": false,
+
+        // Utilities
+        "utilities/accessibility": false,
+        "utilities/reduce-motion": false
+    )
+);
+
+// colors
+@mixin hp-dark {
+    --hp-hue: 220;
+    --hp-background-color: hsl(var(--hp-hue), 22%, 10%);
+    --hp-element-background-color: hsl(var(--hp-hue), 21%, 22%);
+    --hp-element-border-color: hsl(var(--hp-hue), 21%, 30%);
+    --hp-element-text-color: hsl(var(--hp-hue), 20%, 75%);
+    --hp-tags-background-color: hsl(var(--hp-hue), 19%, 30%);
+    --hp-tags-text-color: hsl(var(--hp-hue), 30%, 80%);
+    --hp-background-gradient-opacity: 0.6;
+    --hp-background-gradient:
+        linear-gradient(200deg, hsl(from var(--hp-background-color) calc(h - 20)  40% l            / var(--hp-background-gradient-opacity)), hsl(from var(--hp-background-color) h s l / 10%) 80%),
+        linear-gradient(0deg,   hsl(from var(--hp-background-color) calc(h + 120) 60% calc(l + 10) / var(--hp-background-gradient-opacity)), hsl(from var(--hp-background-color) h s l / 10%) 90%),
+        linear-gradient(336deg, hsl(from var(--hp-background-color) h             s   l            / var(--hp-background-gradient-opacity)), hsl(from var(--hp-background-color) h s l / 10%) 80%);
+}
+[data-theme=light],
+:root:not([data-theme=dark]) {
+    --hp-hue: 37;
+    --hp-background-color: hsl(var(--hp-hue), 4%, 92%);
+    --hp-element-background-color: hsl(var(--hp-hue), 22%, 80%);
+    --hp-element-border-color: hsl(var(--hp-hue), 22%, 70%);
+    --hp-element-text-color: hsl(var(--hp-hue), 20%, 25%);
+    --hp-tags-background-color: hsl(var(--hp-hue), 19%, 75%);
+    --hp-tags-text-color: hsl(var(--hp-hue), 32%, 22%);
+    --hp-background-gradient-opacity: 0.6;
+    --hp-background-gradient:
+        linear-gradient(260deg, hsl(from var(--hp-background-color) calc(h + 80)  30% calc(l - 2) / var(--hp-background-gradient-opacity)), hsl(from var(--hp-background-color) h s l / 10%) 30%),
+        linear-gradient(0deg,   hsl(from var(--hp-background-color) calc(h - 18)  40% calc(l - 5) / var(--hp-background-gradient-opacity)), hsl(from var(--hp-background-color) h s l / 10%) 90%),
+        linear-gradient(160deg, hsl(from var(--hp-background-color) h             s   calc(l + 3) / calc(var(--hp-background-gradient-opacity) * 1.25)), hsl(from var(--hp-background-color) h s l / 10%) 80%);
+}
+[data-theme="dark"] {
+    @include hp-dark;
+}
+@media only screen and (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        @include hp-dark;
+    }
+}
+// global styles
+html {
+    font-size: 14px;
+}
+body {
+    min-height: 100vh; /* used as fallback */
+    min-height: 100dvh;
+    background-color: var(--hp-background-color);
+    background: var(--hp-background-gradient);
+    background-attachment: fixed;
+}
+body, h3 {
+    font-family: Inter, SF Pro, Segoe UI, Roboto, Oxygen, Ubuntu, Helvetica Neue, Helvetica, Arial, sans-serif !important;
+}
+svg {
+    fill: var(--hp-element-text-color);
+    transition: fill var(--pico-transition);
+    flex-shrink: 0;
+}
+input {
+    backdrop-filter: blur(10px);
+    background-color: rgb(from var(--hp-element-background-color) r g b / 0.5);
+    --pico-border-color: var(--hp-element-border-color) !important;
+}
+input:focus {
+    box-shadow: 0 0 12px 3px var(--hp-element-border-color);
+}
+a, a h3, a .tag {
+    transition: all var(--pico-transition);
+}
+a {
+    text-decoration: none;
+    padding: 0.2rem 0.5rem;
+}
+.tags {
+    display: none;
+}
+.error {
+    background-color: var(--pico-form-element-invalid-border-color);
+    color: white;
+    border-radius: var(--pico-border-radius);
+    padding: var(--pico-spacing);
+}
+.topic:not(:first-of-type) {
+    margin-top: 2rem;
+}
+.topic-name {
+    font-size: 1.5rem;
+    font-weight: 100;
+}
+.topic-links {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 1rem;
+    & .app {
+        display: flex;
+        align-items: center;
+        border: var(--pico-border-width) solid rgb(from var(--hp-element-border-color) r g b / 0.1);
+        background-color: rgb(from var(--hp-element-background-color) r g b / 0.4);
+        backdrop-filter: blur(10px);
+        width: 200px;
+        margin: 0.5rem;
+        border-radius: 0.5em;
+        padding: 1em;
+        & {
+            @media screen and (max-width: 1024px) {
+                width: calc(33.33% - 1rem);
+            }
+            @media screen and (max-width: 768px) {
+                width: calc(50% - 1rem);
+            }
+            @media screen and (max-width: 576px) {
+                width: 100%;
+            }
+        }
+    }
+}
+
+.app-content {
+    margin-left: 0.75rem;
+    & h3 {
+       font-size: 1.25rem;
+       font-weight: 400;
+       margin: 0;
+       color: var(--hp-element-text-color);
+    }
+}
+body:has(.app:hover) .app:not(:hover),
+body:has(.app:focus) .app:not(:focus) {
+    opacity: 0.33;
+}
+.app:hover, .app:focus {
+    background-color: rgb(from var(--hp-element-background-color) r g b / 0.6);
+}
+.with-tags {
+    .tags {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .tag {
+        background-color: var(--hp-tags-background-color);
+        color: var(--hp-tags-text-color);
+        border-radius: var(--hp-element-border-color);
+        margin: 0.25rem 0.5rem 0.25rem 0;
+        padding: 0.2rem 0.4rem;
+        font-size: 0.75rem;
+    }
+    .app-content {
+        & h3 {
+            font-size: 1rem;
+        }
+    }
+}

@@ -1,0 +1,50 @@
+{
+  "name": "@nioc/homepage",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Light, simple but attractive and customizable home page to your favorite services",
+  "type": "module",
+  "author": "nioc <dev@nioc.eu>",
+  "license": "GPL-3.0-or-later",
+  "homepage": "https://github.com/nioc/homepage",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nioc/homepage.git"
+  },
+  "bugs": "https://github.com/nioc/homepage/issues",
+  "scripts": {
+    "build-icons": "node build-icons.js",
+    "dev": "vite",
+    "lint": "eslint src",
+    "lint-fix": "eslint src --fix",
+    "svelte-check": "svelte-check",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.0.0",
+    "@fullhuman/postcss-purgecss": "^7.0.2",
+    "@mdi/svg": "^7.4.47",
+    "@picocss/pico": "^2.1.1",
+    "@stylistic/eslint-plugin-js": "^4.2.0",
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "@types/chroma-js": "^3.1.1",
+    "@types/js-yaml": "^4.0.9",
+    "@victorioberra/trianglify-browser": "^4.1.1",
+    "chroma-js": "^3.1.2",
+    "eslint": "^9.27.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-promise": "^7.2.1",
+    "eslint-plugin-svelte": "^3.8.1",
+    "globals": "^15.15.0",
+    "js-yaml": "^4.1.0",
+    "rollup-plugin-visualizer": "^5.14.0",
+    "sass-embedded": "^1.89.0",
+    "simple-icons": "^14.14.0",
+    "svelte": "^5.30.2",
+    "svelte-check": "^4.2.1",
+    "typescript-eslint": "^8.32.1",
+    "vite": "^6.3.5"
+  }
+}
