@@ -17,10 +17,12 @@ ENV NGINX_SSO_USER_HEADER_NAME=Remote_User
 EXPOSE 80
 ARG GIT_COMMIT=unspecified
 ARG BUILD_DATE
+ARG VERSION=unspecified
 LABEL org.label-schema.name="homepage"
 LABEL org.label-schema.vendor="nioc"
 LABEL org.label-schema.license="AGPL-3.0-or-later"
 LABEL org.label-schema.vcs-url="https://github.com/nioc/homepage"
 LABEL org.label-schema.vcs-ref=$GIT_COMMIT
 LABEL org.label-schema.build-date=$BUILD_DATE
+LABEL org.label-schema.version=$VERSION
 LABEL maintainer="nioc <dev@nioc.eu>"

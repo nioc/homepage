@@ -48,41 +48,11 @@ services:
 
 ### Within an Nginx container
 
-Unzip `dist` from the archive files into a directory (`/home/myuser/homepage/app` for example)
+Unzip files from the archive into a directory (`/home/myuser/homepage` for example), you should have:
+- Nginx configuration file: `default.conf.template`
+- builded app folder: `homepage-app`
 
-Create a `default.conf.template` file like this:
-```conf
-server {
-    listen          ${NGINX_PORT};
-    server_name     ${NGINX_HOST};
-
-    gzip            ${NGINX_GZIP};
-    gzip_types      application/javascript text/css;
-
-    location = /conf/app.yml {
-        types { } default_type "application/yaml";
-        root   /usr/share/nginx/html;
-        sub_filter 'groupsAdditionalFiles:' 'groupsAdditionalFiles: $http_${NGINX_SSO_GROUPS_HEADER_NAME}';
-        sub_filter 'userAdditionalFile:' 'userAdditionalFile: $http_${NGINX_SSO_USER_HEADER_NAME}';
-        sub_filter_types application/yaml;
-    }
-
-    location ~* ^/conf/(.+).yml$ {
-        types { } default_type "application/yaml";
-        root   /usr/share/nginx/html;
-    }
-
-    location ~* ^/files/.*$ {
-        root   /usr/share/nginx/html;
-        try_files $uri $uri/;
-    }
-
-    location / {
-        root   /usr/share/nginx/html/app;
-        try_files $uri /index.html;
-    }
-}
-```
+Create a `conf` folder
 
 Example of a `docker-compose.yml` file:
 ```yaml
@@ -95,7 +65,7 @@ services:
     - "8080:80"
     volumes:
       - /home/myuser/homepage/default.conf.template:/etc/nginx/templates/default.conf.template:ro
-      - /home/myuser/homepage/app:/usr/share/nginx/html/app:ro
+      - /home/myuser/homepage/homepage-app:/usr/share/nginx/html/app:ro
       - /home/myuser/homepage/conf:/usr/share/nginx/html/conf:ro
       # - /home/myuser/homepage/files:/usr/share/nginx/html/files:ro
     environment:
@@ -105,11 +75,10 @@ services:
     - NGINX_SSO_GROUPS_HEADER_NAME=Remote_Groups
     - NGINX_SSO_USER_HEADER_NAME=Remote_User
 ```
-Then, create a `conf` folder and go to configuration part
 
 ### With an existing web server
 
-Unzip the `dist` archive files into the server's root directory, then, create a `conf` folder and go to configuration part
+Unzip the `homepage-app` folder from the archive into the server's root directory, then, create a `conf` folder
 
 ## Configuration
 
