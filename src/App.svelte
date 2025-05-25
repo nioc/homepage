@@ -1,9 +1,11 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
+  import { onMount, type Component } from 'svelte'
   import { load } from 'js-yaml'
   import LinkComponent from './lib/Link.svelte'
   import type { Config, Topic, Link } from './types/config'
 
+  let configComponent: Component<Record<string, never>, object, ''>
+  let isConfigMode = false
   let config: Config = {
     topics: [],
   }
@@ -187,6 +189,12 @@
     config.topics.sort(sortItems)
     config.topics.forEach((topic) => topic.links.sort(sortItems))
 
+    if (new URLSearchParams(document.location.search).has('config')) {
+      configComponent = (await import('./lib/ConfigLink.svelte')).default
+      isConfigMode = true
+      return
+    }
+
     isReady = true
   })
 
@@ -206,6 +214,9 @@
 </script>
 
 <main>
+  {#if isConfigMode}
+    <svelte:component this={configComponent} />
+  {/if}
   {#if isReady}
     {#if config.displayTitle}
       <h1>{config.title}</h1>

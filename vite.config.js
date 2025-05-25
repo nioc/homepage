@@ -12,6 +12,13 @@ export default defineConfig({
       gzipSize: true,
     }),
   ],
+  server: {
+    proxy: {
+      '/proxy/': 'http://localhost:8081',
+      '/uploads/': 'http://localhost:8081',
+      '/files/': 'http://localhost:8081',
+    },
+  },
   build: {
     chunkSizeWarningLimit: 75,
   },

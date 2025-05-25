@@ -11,8 +11,10 @@ node_modules
 dist
 *.local
 public/icons
+public/icons-list.json
 public/conf/*.yml
 public/custom.css
+uploads
 
 # Editor directories and files
 .vscode/*

@@ -5,8 +5,14 @@ server {
     gzip            ${NGINX_GZIP};
     gzip_types      application/javascript text/css;
 
+    server_tokens off;
+
     location = /conf/app.yml {
         types { } default_type "application/yaml";
+        add_header X-Content-Type-Options nosniff;
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-XSS-Protection "1; mode=block";
+        add_header Content-Security-Policy "default-src 'none'";
         root   /usr/share/nginx/html;
         sub_filter 'groupsAdditionalFiles:' 'groupsAdditionalFiles: $http_${NGINX_SSO_GROUPS_HEADER_NAME}';
         sub_filter 'userAdditionalFile:' 'userAdditionalFile: $http_${NGINX_SSO_USER_HEADER_NAME}';
@@ -14,17 +20,52 @@ server {
     }
 
     location ~* ^/conf/(.+).yml$ {
+        add_header X-Content-Type-Options nosniff;
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-XSS-Protection "1; mode=block";
+        add_header Content-Security-Policy "default-src 'none'";
         types { } default_type "application/yaml";
         root   /usr/share/nginx/html;
     }
 
     location ~* ^/files/.*$ {
+        add_header X-Content-Type-Options nosniff;
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-XSS-Protection "1; mode=block";
+        add_header Content-Security-Policy "default-src 'none'";
         root   /usr/share/nginx/html;
         try_files $uri $uri/;
     }
 
     location / {
+        add_header X-Content-Type-Options nosniff;
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-XSS-Protection "1; mode=block";
+        add_header Content-Security-Policy "default-src 'self'; img-src 'self' data: http: https: ; script-src 'self' 'unsafe-eval'";
         root   /usr/share/nginx/html/app;
         try_files $uri /index.html;
+    }
+
+    location /proxy/ {
+        resolver ${NGINX_RESOLVER};
+        resolver_timeout 5s;
+        proxy_set_header Referer "";
+        proxy_pass $arg_url;
+        proxy_intercept_errors on;
+        error_page 301 302 307 308 = @handle_redirect;
+    }
+
+    location /uploads {
+        alias /usr/share/nginx/html/files;
+        client_body_temp_path /tmp;
+        dav_methods ${NGINX_FETCH_FILE_METHOD};
+        dav_access group:rw all:r;
+        client_body_buffer_size 512k;
+        client_max_body_size 512k;
+        limit_except PUT { deny all; }
+    }
+
+    location @handle_redirect {
+        return 302 $http_x_homepage_url/proxy/?url=$upstream_http_location;
     }
 }

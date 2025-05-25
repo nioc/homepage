@@ -8,9 +8,9 @@
   export let tags = []
 </script>
 
-<a {href} class="app" title="{name} ({href})" {target}>
+<a {href} class="app" title="{name} ({href})" {target} rel="noreferrer">
   {#if iconUrl}
-    <!-- svelte-ignore a11y-missing-attribute -->
+    <!-- svelte-ignore a11y_missing_attribute -->
     <img src={iconUrl} height="36" aria-hidden="true"/>
   {:else}
     {#key icon}

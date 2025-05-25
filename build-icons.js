@@ -13,6 +13,7 @@ const destPath = './public/icons';
   }
   console.log(`creating folder ${destPath}`)
   await mkdir(destPath)
+  const iconNames = []
 
   // Material Design Icons
   console.log('creating Material Design Icons')
@@ -20,6 +21,7 @@ const destPath = './public/icons';
   for (const icon of meta) {
     try {
       await copyFile(`${srcPathMdi}/svg/${icon.name}.svg`, `${destPath}/${icon.name}.svg`)
+      iconNames.push(icon.name)
     } catch (error) {
       console.error(error.message, icon.name)
     }
@@ -39,9 +41,11 @@ const destPath = './public/icons';
       } else {
         await copyFile(`${srcPathSimpleIcons}/icons/${slug}.svg`, `${destPath}/${slug}.svg`)
       }
+      iconNames.push(slug)
     } catch (error) {
       console.error(error.message, icon.title)
     }
   }
+  await writeFile(`${destPath}-list.json`, JSON.stringify(iconNames), { encoding })
 
 })()

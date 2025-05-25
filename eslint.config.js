@@ -2,6 +2,7 @@ import js from '@eslint/js'
 import eslintPluginSvelte from 'eslint-plugin-svelte'
 import pluginPromise from 'eslint-plugin-promise'
 import stylisticJs from '@stylistic/eslint-plugin-js'
+import depend from 'eslint-plugin-depend'
 import globals from 'globals'
 import ts from 'typescript-eslint'
 
@@ -17,6 +18,7 @@ export default [
   js.configs.recommended,
   ...ts.configs.recommended,
   pluginPromise.configs['flat/recommended'],
+  depend.configs['flat/recommended'],
   stylisticJs.configs['all'],
   ...eslintPluginSvelte.configs['flat/recommended'],
   {
@@ -49,6 +51,9 @@ export default [
       '@stylistic/js/object-property-newline': ['off', { allowAllPropertiesOnSameLine: true }],
       '@stylistic/js/multiline-comment-style': ['off'],
       '@stylistic/js/no-confusing-arrow': 'off',
+      'depend/ban-dependencies': ['error', {
+        allowed: ['js-yaml'], // alternative is larger
+      }],
     },
   },
 ]

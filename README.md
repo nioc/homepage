@@ -1,10 +1,17 @@
 # Homepage
 
+[![license: GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![GitHub release](https://img.shields.io/github/release/nioc/homepage.svg)](https://github.com/nioc/homepage/releases/latest)
+[![GitHub Docker workflow status](https://img.shields.io/github/actions/workflow/status/nioc/homepage/release.yml?label=github%20build)](https://github.com/nioc/homepage/actions/workflows/release.yml)
+[![GitHub downloads](https://img.shields.io/github/downloads/nioc/homepage/total?label=github%20downloads)](https://github.com/nioc/homepage/releases/latest)
+[![Docker Pulls](https://img.shields.io/docker/pulls/nioc/homepage)](https://hub.docker.com/r/nioc/homepage/tags)
+[![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/nioc/homepage?sort=date)](https://hub.docker.com/r/nioc/homepage/tags)
+
 Light, simple but attractive and customizable home page to your favorite services
 
 ## Features
 
-- simple configuration with YAML files (no backend required)
+- simple configuration with YAML files and GUI (no backend required)
 - use _Trusted Header SSO_ like those provided by [Authelia](https://www.authelia.com/integration/trusted-header-sso/introduction/): the links displayed can be configured for each group (LDAP) and user
 - links grouped by topic (system admin, communication, etc.)
 - search for a link by name or tags
@@ -16,7 +23,7 @@ Light, simple but attractive and customizable home page to your favorite service
 - nice background using [Trianglify](https://github.com/qrohlf/trianglify) (requires additional JS file to be loaded)
 - responsive
 - easily customizable by supplying an additional css file
-- lightweight (75 Kb ungzipped without Trianglify, 30 kb gzipped) and tiny server memory footprint (< 15 Mb)
+- lightweight (100 Kb ungzipped without Trianglify, 40 kb gzipped) and tiny server memory footprint (< 10 Mb)
 
 ![Screenshot](/screenshots/basic.png "Screenshot with tags ans search")
 
@@ -37,13 +44,15 @@ services:
     volumes:
     - ./conf:/usr/share/nginx/html/conf:ro
     # - ./default.conf.template:/etc/nginx/templates/default.conf.template:ro
-    # - ./files:/usr/share/nginx/html/files:ro
+    # - ./files:/usr/share/nginx/html/files
     environment:
     - NGINX_HOST=apps.mydomain
     # - NGINX_PORT=80 #default
     # - NGINX_GZIP=off #default
     # - NGINX_SSO_GROUPS_HEADER_NAME=Remote_Groups #default
     # - NGINX_SSO_USER_HEADER_NAME=Remote_User #default
+    # - NGINX_RESOLVER=127.0.0.11 #default
+    # - NGINX_FETCH_FILE_METHOD=off #default, set PUT for uploading external icons
 ```
 
 ### Within an Nginx container
@@ -67,18 +76,20 @@ services:
       - /home/myuser/homepage/default.conf.template:/etc/nginx/templates/default.conf.template:ro
       - /home/myuser/homepage/homepage-app:/usr/share/nginx/html/app:ro
       - /home/myuser/homepage/conf:/usr/share/nginx/html/conf:ro
-      # - /home/myuser/homepage/files:/usr/share/nginx/html/files:ro
+      # - /home/myuser/homepage/files:/usr/share/nginx/html/files
     environment:
     - NGINX_HOST=apps.mydomain
     - NGINX_PORT=80
     - NGINX_GZIP=off
     - NGINX_SSO_GROUPS_HEADER_NAME=Remote_Groups
     - NGINX_SSO_USER_HEADER_NAME=Remote_User
+    - NGINX_RESOLVER=9.9.9.9
+    - NGINX_FETCH_FILE_METHOD=PUT
 ```
 
 ### With an existing web server
 
-Unzip the `homepage-app` folder from the archive into the server's root directory, then, create a `conf` folder
+Unzip the `homepage-app` folder from the archive into the server's root directory, then, create a `conf` folder ; **some features may not work**.
 
 ## Configuration
 
@@ -124,6 +135,24 @@ If you use an SSO system, you can use it to identify the logged-in user and his 
 In this case, set the environment variables: `NGINX_SSO_GROUPS_HEADER_NAME` (for Authelia: `Remote_Groups`) and `NGINX_SSO_USER_HEADER_NAME` (for Authelia: `Remote_User`) and create associated YAML files:
 - For a basic home server with 2 users (example: John and Mary): `conf/john.yml` and `conf/mary.yml`
 - For more complex organization, use groups  (example: admin and dev): `conf/dev.yml` and `conf/admin.yml`
+
+### Configuration GUI
+
+A graphical configuration page can be accessed by adding `?config` to the url.
+
+This allows you to simply add a link via a form (generating the YAML ready to add to the file).
+
+#### Use of page metadata
+
+In order to retrieve the web page's metadata (title and icon), it is necessary to value a valid DNS resolver via the variable `NGINX_RESOLVER` (with `9.9.9.9` for example), by default, it uses the docker internal resolver (`127.0.0.11`).
+
+#### External icons persistence
+
+In order to persist downloaded icons, a folder belonging to Nginx group (`101`) must be created and mounted on `/usr/share/nginx/html/files`.
+
+In order to persist the icon directly from the GUI, it is also necessary to value the `NGINX_FETCH_FILE_METHOD` variable with `PUT`.
+
+Please note that using proxy and file upload functions **can damage your filesystem**, so only use them in a secure environment (behind an SSO-authenticated reverse proxy, with basic auth, etc.).
 
 ### Advanced styling
 
