@@ -11,11 +11,17 @@
 
   onMount(async () => {
     try {
-      const svgText = await (await fetch(`icons/${icon}.svg`)).text()
       const parser = new DOMParser()
-      let svgDoc = parser.parseFromString(svgText, 'image/svg+xml')
-      if (svgDoc.querySelector('parsererror')) {
+      let svgDoc
+      if (icon === '') {
         svgDoc = parser.parseFromString(defaultIcon, 'image/svg+xml')
+      } else {
+        const svgText = await (await fetch(`icons/${icon}.svg`)).text()
+        svgDoc = parser.parseFromString(svgText, 'image/svg+xml')
+        if (svgDoc.querySelector('parsererror')) {
+          svgDoc = parser.parseFromString(defaultIcon, 'image/svg+xml')
+          console.warn(`Unknown icon "${icon}"`)
+        }
       }
       svgElement = svgDoc.documentElement
       svgElement.setAttribute('width', svgSize)
