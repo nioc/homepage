@@ -1,34 +1,16 @@
 <script lang="ts">
   import { onMount, type Component } from 'svelte'
   import { load } from 'js-yaml'
-  import LinkComponent from './lib/Link.svelte'
-  import type { Config, Topic, Link } from './types/config'
+  import Home from './lib/Home.svelte'
+  import type { Config } from './types/config'
 
   let configComponent: Component<Record<string, never>, object, ''>
-  let isConfigMode = false
   let config: Config = {
     topics: [],
   }
-  let search = ''
   let message: string = null
+  let isConfigMode = false
   let isReady = false
-
-  function sortItems (a: Topic | Link, b: Topic | Link) {
-    if (a.order === undefined) {
-      return b.order === undefined
-        ? 0
-        : 1
-    }
-    if (b.order === undefined) {
-      return -1
-    }
-    if (a.order === b.order) {
-      return 0
-    }
-    return a.order > b.order
-      ? 1
-      : -1
-  }
 
   async function fetchConfig (fileName: string) {
     try {
@@ -186,8 +168,6 @@
         }
       }
     }
-    config.topics.sort(sortItems)
-    config.topics.forEach((topic) => topic.links.sort(sortItems))
 
     if (new URLSearchParams(document.location.search).has('config')) {
       configComponent = (await import('./lib/ConfigLink.svelte')).default
@@ -197,20 +177,6 @@
 
     isReady = true
   })
-
-  let topics = []
-  $: topics =
-    search === ''
-      ? config.topics
-      : config.topics
-        .map((topic) => {
-          const links = topic.links
-            .filter((link) =>
-              link.name.toLowerCase().includes(search.toLowerCase()) || link.tags && link.tags.some((tag) => tag.toLowerCase().includes(search.toLowerCase())),
-            )
-          return { ...topic, links }
-        })
-        .filter((topic) => topic.links.length > 0)
 </script>
 
 <main>
@@ -226,19 +192,6 @@
       <pre class="error">{message}</pre>
     {/if}
 
-    {#if config.displaySearch}
-      <input bind:value={search} type="search" placeholder="Search" />
-    {/if}
-
-    {#each topics as { name, links } (name)}
-      <div class="topic">
-        <h2 class="topic-name">{name}</h2>
-        <div class="topic-links">
-          {#each links as { href, name, iconUrl, icon, target, tags }, index (index)}
-            <LinkComponent {href} {name} {iconUrl} {icon} {target} {tags} />
-          {/each}
-        </div>
-      </div>
-    {/each}
+    <Home displaySearch={config.displaySearch} topics={config.topics}/>
   {/if}
 </main>
