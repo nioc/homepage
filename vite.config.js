@@ -16,11 +16,12 @@ export default defineConfig({
     proxy: {
       '/proxy/': 'http://localhost:8081',
       '/uploads/': 'http://localhost:8081',
+      '/admin/conf/': 'http://localhost:8081',
       '/files/': 'http://localhost:8081',
     },
   },
   build: {
-    chunkSizeWarningLimit: 75,
+    chunkSizeWarningLimit: 80,
   },
   preview: {
     port: 5173,

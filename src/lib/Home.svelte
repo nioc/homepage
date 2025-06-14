@@ -1,6 +1,7 @@
 <script lang="ts">
   import LinkComponent from '../lib/Link.svelte'
-  import type { Link, Topic } from '../types/config'
+  import type { Topic } from '../types/config'
+  import { sortItems } from './utils'
   let {
     displaySearch,
     topics,
@@ -9,27 +10,11 @@
     topics: Topic[],
   } = $props()
 
-  function sortItems (a: Topic | Link, b: Topic | Link) {
-    if (a.order === undefined) {
-      return b.order === undefined
-        ? 0
-        : 1
-    }
-    if (b.order === undefined) {
-      return -1
-    }
-    if (a.order === b.order) {
-      return 0
-    }
-    return a.order > b.order
-      ? 1
-      : -1
-  }
-
   function sortTopicsAndLinks (topics: Topic[]) {
-    topics.sort(sortItems)
-    topics.forEach((topic) => topic.links.sort(sortItems))
-    return topics
+    const _topics = structuredClone($state.snapshot(topics))
+    _topics.sort(sortItems)
+    _topics.forEach((topic) => topic.links.sort(sortItems))
+    return _topics
   }
 
   let search = $state('')
@@ -65,8 +50,8 @@
   <div class="topic">
     <h2 class="topic-name">{name}</h2>
     <div class="topic-links">
-      {#each links as { href, name, iconUrl, icon, target, tags }, index (index)}
-        <LinkComponent {href} {name} {iconUrl} {icon} {target} {tags} />
+      {#each links as link (link)}
+        <LinkComponent {link} />
       {/each}
     </div>
   </div>

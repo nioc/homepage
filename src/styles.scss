@@ -24,14 +24,14 @@ with (
         // "content/typography": true,
         "content/embedded": false,
         // "content/button": true,
-        "content/table": false,
-        // "content/code": true,
+        // "content/table": true, // [admin] for topics/links list
+        // "content/code": true, // [admin] for YAML content
         "content/figure": false,
-        // "content/miscs": true, // for input validation
+        // "content/miscs": true, // [admin] for input validation
 
         // Forms
         // "forms/basics": true,
-        "forms/checkbox-radio-switch": false,
+        // "forms/checkbox-radio-switch": true, // [admin] for boolean
         "forms/input-color": false,
         "forms/input-date": false,
         "forms/input-file": false,
@@ -39,12 +39,12 @@ with (
         // "forms/input-search": true,
 
         // Components
-        "components/accordion": false,
-        "components/card": false,
+        // "components/accordion": true, // [admin] for YAML content
+        // "components/card": true, // [admin] for modal
         "components/dropdown": false,
         "components/group": false,
         "components/loading": false,
-        "components/modal": false,
+        // "components/modal": true, // [admin] for modal
         "components/nav": false,
         "components/progress": false,
         "components/tooltip": false,
@@ -95,10 +95,12 @@ with (
         @include hp-dark;
     }
 }
+
 // global styles
 html {
     font-size: 14px;
 }
+
 body {
     min-height: 100vh; /* used as fallback */
     min-height: 100dvh;
@@ -107,55 +109,69 @@ body {
     background-attachment: fixed;
     user-select: none;
 }
+
 body, h3 {
     font-family: Inter, SF Pro, Segoe UI, Roboto, Oxygen, Ubuntu, Helvetica Neue, Helvetica, Arial, sans-serif !important;
 }
+
 svg {
     fill: var(--hp-element-text-color);
     transition: fill var(--pico-transition);
     flex-shrink: 0;
 }
+
 input, button, pre {
     backdrop-filter: blur(10px);
     background-color: rgb(from var(--hp-element-background-color) r g b / 0.5);
     --pico-border-color: var(--hp-element-border-color) !important;
 }
+
 input:focus {
     box-shadow: 0 0 12px 3px var(--hp-element-border-color);
 }
+
 // workaround for purgeCSS issue https://github.com/FullHuman/purgecss/issues/978
 fieldset[disabled] :is(input:not([type=submit], [type=button], [type=reset])) {
   opacity: var(--pico-form-element-disabled-opacity);
   pointer-events: none;
 }
+
+label:has(input[required]) span::after,
 label:has(+ input[required])::after {
     content: "*";
     color: var(--pico-del-color);
     margin-left: 0.2rem;
   }
+
 a, a h3, a .tag {
     transition: all var(--pico-transition);
 }
+
 a {
     text-decoration: none;
     padding: 0.2rem 0.5rem;
 }
+
 .tags {
     display: none;
 }
+
 .error {
     background-color: var(--pico-form-element-invalid-border-color);
     color: white;
     border-radius: var(--pico-border-radius);
     padding: var(--pico-spacing);
 }
+
 .topic:not(:first-of-type) {
     margin-top: 2rem;
 }
+
 .topic-name {
     font-size: 1.5rem;
     font-weight: 100;
 }
+
 .topic-links {
     display: flex;
     flex-wrap: wrap;
@@ -193,13 +209,16 @@ a {
        color: var(--hp-element-text-color);
     }
 }
+
 body:has(.app:hover) .app:not(:hover),
 body:has(.app:focus) .app:not(:focus) {
     opacity: 0.33;
 }
+
 .app:hover, .app:focus {
     background-color: rgb(from var(--hp-element-background-color) r g b / 0.6);
 }
+
 .with-tags {
     .tags {
         display: flex;
@@ -219,28 +238,35 @@ body:has(.app:focus) .app:not(:focus) {
         }
     }
 }
+
+// admin only
 .config-container {
     border-radius: 0.5em;
     opacity: 1;
     background-color: var(--hp-container-background-color);
     padding: 1em;
-    max-width: 50rem;
+    max-width: 80rem;
     margin: auto;
 }
+
 .icon-url-proposal {
     margin: 0 0.5rem 0.5rem 0;
     padding: 0.4rem 0.5rem;
 }
+
 .selectable {
     user-select: all;
     cursor: pointer;
 }
+
 code {
     color: var(--pico-color);
 }
+
 .label {
     margin-bottom: calc(var(--pico-spacing) * 0.375);
 }
+
 .icon-field {
     position: relative;
     input {
@@ -255,5 +281,106 @@ code {
         left: 0;
         width: 2.5em;
         padding: var(--pico-form-element-spacing-vertical) var(--pico-form-element-spacing-horizontal);
+    }
+}
+
+button {
+    line-height: initial;
+    display: inline-flex;
+    align-items: center;
+    --pico-color: unset;
+    svg {
+        width: 18px;
+        height: 18px;
+        &:not(:only-child):first-child {
+            margin-right: 0.5em;
+        }
+        &:not(:only-child):last-child {
+            margin-left: 0.5em;
+        }
+    }
+    &.transparent {
+        border: none;
+        background-color: transparent;
+        padding: 0.25rem;
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+    }
+}
+
+button.delete svg {
+    fill: var(--pico-del-color) !important;
+}
+
+.is-error {
+    color: var(--pico-del-color) !important;
+}
+
+table {
+    td {
+        white-space: nowrap;
+    }
+    th.expand {
+        width: 99%;
+    }
+    th.shrink,
+    td.shrink {
+        padding: 0;
+        &:last-child {
+            padding-inline-end: var(--pico-spacing);
+        }
+    }
+    tr.subtitle td {
+        background-color: rgb(from var(--pico-background-color) r g b/0.5);
+    }
+}
+
+// expandable
+[role="button"] {
+    background-color: var(--hp-element-background-color);
+    border-color: var(--hp-element-background-color);
+    --pico-color: unset;
+}
+
+.editable {
+    display: inline-flex;
+    align-items: center;
+    button:not(:first-child) {
+        padding-inline-start: 0.5em;
+    }
+}
+
+body:has(dialog[open]) {
+    overflow: hidden;
+}
+
+$animation-duration: 0.1s;
+dialog,
+dialog > article {
+    animation-duration: $animation-duration;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: both;
+}
+dialog {
+    animation-duration: ($animation-duration * 4);
+    animation-name: modal-overlay;
+    > article {
+        animation-delay: $animation-duration;
+        animation-name: modal;
+    }
+}
+@keyframes modal-overlay {
+    from {
+        backdrop-filter: none;
+        background-color: transparent;
+    }
+}
+
+@keyframes modal {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
     }
 }

@@ -1,11 +1,21 @@
-<script>
+<script lang="ts">
   import Icon from './Icon.svelte'
-  export let href
-  export let name
-  export let iconUrl
-  export let icon = null
-  export let target = '_blank'
-  export let tags = []
+  import type { Link } from '../types/config'
+
+  let {
+    link,
+  }: {
+    link: Link,
+  } = $props()
+
+  const {
+    href,
+    name,
+    iconUrl,
+    icon = null,
+    target = '_blank',
+    tags = [],
+  } = link
 </script>
 
 <a {href} class="app" title="{name} ({href})" {target} rel="noreferrer">
@@ -13,9 +23,7 @@
     <!-- svelte-ignore a11y_missing_attribute -->
     <img src={iconUrl} height="36" aria-hidden="true"/>
   {:else}
-    {#key icon}
-      <Icon {icon} size={2} />
-    {/key}
+    <Icon {icon} size={2} />
   {/if}
   <div class="app-content">
     <h3>{name}</h3>

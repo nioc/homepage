@@ -1,18 +1,23 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte'
   import defaultIcon from '../assets/defaultIcon.svg?raw'
 
-  export let icon
-  export let size = 1
+  let {
+    icon,
+    size = 1,
+  }: {
+    icon: string,
+    size: number
+  } = $props()
 
-  let isReady = false
-  let svgElement
+  let isReady = $state(false)
+  let svgElement: HTMLElement = $state(undefined)
   const svgSize = (18 * size).toString()
 
   onMount(async () => {
     try {
       const parser = new DOMParser()
-      let svgDoc
+      let svgDoc: Document
       if (icon === '') {
         svgDoc = parser.parseFromString(defaultIcon, 'image/svg+xml')
       } else {

@@ -1,34 +1,20 @@
 <script lang="ts">
   import { onMount, type Component } from 'svelte'
-  import { load } from 'js-yaml'
+  import { fetchConfigFile, getAdditionalFiles, mergeConfigFile } from './lib/utils'
   import Home from './lib/Home.svelte'
   import type { Config } from './types/config'
 
-  let configComponent: Component<Record<string, never>, object, ''>
-  let config: Config = {
+  let ConfigComponent: Component<Record<string, never>, object, ''> = $state(undefined)
+  let config: Config = $state({
     topics: [],
-  }
-  let message: string = null
-  let isConfigMode = false
-  let isReady = false
+  })
+  let message: string = $state(null)
+  let isConfigMode = $state(false)
+  let isReady = $state(false)
 
   async function fetchConfig (fileName: string) {
     try {
-      const response = await fetch(`./conf/${fileName}.yml`)
-      const configApp: Config = load(await response.text(), {
-        onWarning: (e) => console.warn(e),
-      }) as Config
-      if (typeof configApp !== 'object') {
-        throw new Error('parsing error, check server response')
-      }
-      configApp.topics.forEach((topic) => {
-        topic.links.forEach((link) => {
-          if (link.tags === undefined) {
-            link.tags = []
-          }
-        })
-      })
-      return configApp
+      return await fetchConfigFile(fileName)
     } catch (error) {
       const errorMessage = `An error occurred while processing "conf/${fileName}.yml" file: ${error.message}`
       console.warn(errorMessage)
@@ -125,52 +111,18 @@
     }
 
     if (config.groupsAdditionalFiles || config.userAdditionalFile) {
-      const additionalFiles = [
-        // add group files (set by Nginx according to SSO header) only if it matches allowed pattern
-        ...config.groupsAdditionalFiles.split(',')
-          .filter((fileName) => config.groupsAdditionalFilesPattern
-            ? new RegExp(config.groupsAdditionalFilesPattern).test(fileName)
-            : true),
-        // add file (set by Nginx according to SSO header)
-        config.userAdditionalFile,
-      ]
-        // remove invalid (empty) values
-        .filter((fileName) => fileName)
+      const additionalFiles = getAdditionalFiles(config)
 
       for (const fileName of additionalFiles) {
         const configFile = await fetchConfig(fileName)
         if (configFile) {
-          configFile.topics.forEach((topic) => {
-            const indexTopic = config.topics.findIndex((previousTopic) => previousTopic.name === topic.name)
-            if (indexTopic === -1) {
-              // add new topic
-              config.topics.push(topic)
-            } else {
-              // topic already exists in app config, override order and merge links
-              if (topic.order !== undefined) {
-                config.topics[indexTopic].order = topic.order
-              }
-              topic.links.forEach((link) => {
-                const indexLink = config.topics[indexTopic].links.findIndex((previousLink) => previousLink.name === link.name)
-                if (indexLink === -1) {
-                  // add new link
-                  config.topics[indexTopic].links.push(link)
-                } else {
-                  // link already exists, override it
-                  if (link.order === undefined && config.topics[indexTopic].links[indexLink].order !== undefined) {
-                    link.order = config.topics[indexTopic].links[indexLink].order
-                  }
-                  config.topics[indexTopic].links[indexLink] = link
-                }
-              })
-            }
-          })
+          mergeConfigFile($state.snapshot(configFile), config)
         }
       }
     }
 
     if (new URLSearchParams(document.location.search).has('config')) {
-      configComponent = (await import('./lib/ConfigLink.svelte')).default
+      ConfigComponent = (await import('./lib/Config.svelte')).default
       isConfigMode = true
       return
     }
@@ -181,7 +133,7 @@
 
 <main>
   {#if isConfigMode}
-    <svelte:component this={configComponent} />
+    <ConfigComponent/>
   {/if}
   {#if isReady}
     {#if config.displayTitle}

@@ -38,13 +38,14 @@ Example of a `docker-compose.yml` file, exposing homepage on port 8080 with prov
 services:
   homepage:
     image: nioc/homepage:latest
+    container_name: homepage
     restart: always
     ports:
     - "8080:80"
     volumes:
     - ./conf:/usr/share/nginx/html/conf:ro
-    # - ./default.conf.template:/etc/nginx/templates/default.conf.template:ro
-    # - ./files:/usr/share/nginx/html/files
+    # - ./files:/usr/share/nginx/html/files #required if you use locally downloaded external icons
+    # - ./default.conf.template:/etc/nginx/templates/default.conf.template:ro #only if you want to customize the Nginx conf
     environment:
     - NGINX_HOST=apps.mydomain
     # - NGINX_PORT=80 #default
@@ -69,6 +70,7 @@ version: "3.4"
 services:
   homepage:
     image: nginx:stable-alpine
+    container_name: homepage
     restart: always
     ports:
     - "8080:80"
@@ -76,14 +78,14 @@ services:
       - /home/myuser/homepage/default.conf.template:/etc/nginx/templates/default.conf.template:ro
       - /home/myuser/homepage/homepage-app:/usr/share/nginx/html/app:ro
       - /home/myuser/homepage/conf:/usr/share/nginx/html/conf:ro
-      # - /home/myuser/homepage/files:/usr/share/nginx/html/files
+      # - /home/myuser/homepage/files:/usr/share/nginx/html/files #required if you use locally downloaded external icons
     environment:
     - NGINX_HOST=apps.mydomain
     - NGINX_PORT=80
     - NGINX_GZIP=off
     - NGINX_SSO_GROUPS_HEADER_NAME=Remote_Groups
     - NGINX_SSO_USER_HEADER_NAME=Remote_User
-    - NGINX_RESOLVER=9.9.9.9
+    - NGINX_RESOLVER=127.0.0.11
     - NGINX_FETCH_FILE_METHOD=PUT
 ```
 
@@ -148,11 +150,52 @@ In order to retrieve the web page's metadata (title and icon), it is necessary t
 
 #### External icons persistence
 
-In order to persist downloaded icons, a folder belonging to Nginx group (`101`) must be created and mounted on `/usr/share/nginx/html/files`.
+In order to persist downloaded icons, a folder belonging to Nginx group (`101`) must be created and mounted on `/usr/share/nginx/html/files`:
+
+``` sh
+sudo chgrp 101 files
+sudo chmod g+w files
+```
 
 In order to persist the icon directly from the GUI, it is also necessary to value the `NGINX_FETCH_FILE_METHOD` variable with `PUT`.
 
 Please note that using proxy and file upload functions **can damage your filesystem**, so only use them in a secure environment (behind an SSO-authenticated reverse proxy, with basic auth, etc.).
+
+#### YAML file edition
+
+In order to update YAML files from the GUI, you must:
+- mount `/usr/share/nginx/html/conf` directory as read-write (without `:ro`) and make it writable by the Nginx group (`101`)
+- also set the `NGINX_FETCH_FILE_METHOD` variable to `PUT`.
+
+It is therefore **strongly recommended** to set up SSO ACL, for example with [Authelia](https://www.authelia.com/configuration/security/access-control/#named-regex-groups):
+
+``` yaml
+access_control:
+  default_policy: deny
+  rules:
+    # authorize users to modify their own files or those of groups to which they belong (with 2 factors auth)
+    - domain: apps.mydomain
+      resources:
+      - ^/admin/conf/(?P<User>\w+)\.yml$
+      - ^/admin/conf/(?P<Group>\w+)\.yml$
+      policy: two_factor
+    # authorize logged-in users to access app config and their links
+    - domain: apps.mydomain
+      resources:
+      - ^/conf/app\.yml$
+      - ^/conf/(?P<User>\w+)\.yml$
+      - ^/conf/(?P<Group>\w+)\.yml$
+      policy: one_factor
+    # prevent users from accessing other users' configurations
+    - domain: apps.mydomain
+      resources:
+      - ^/conf/\w+\.yml$
+      - ^/admin/conf/\w+\.yml$
+      policy: deny
+    # authorize logged-in users to access the application
+    - domain: apps.mydomain
+      policy: one_factor
+```
 
 ### Advanced styling
 

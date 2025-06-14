@@ -24,4 +24,5 @@ export type Link = {
     href: string
     target?: string
     tags?: string[]
+    source?: string
 }

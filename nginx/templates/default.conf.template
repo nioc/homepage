@@ -65,6 +65,16 @@ server {
         limit_except PUT { deny all; }
     }
 
+    location /admin/conf {
+        alias /usr/share/nginx/html/conf;
+        client_body_temp_path /tmp;
+        dav_methods ${NGINX_FETCH_FILE_METHOD};
+        dav_access group:rw all:r;
+        client_body_buffer_size 512k;
+        client_max_body_size 512k;
+        limit_except PUT { deny all; }
+    }
+
     location @handle_redirect {
         return 302 $http_x_homepage_url/proxy/?url=$upstream_http_location;
     }

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { dump } from 'js-yaml'
   import mimeDb from 'mime-db'
   import type { Link } from '../types/config'
   import Icon from './Icon.svelte'
@@ -7,32 +6,38 @@
   const appUrl = `${document.location.origin}${document.location.pathname}`.replace(/\/$/, '')
   const proxyBaseUrl = 'proxy/?url='
 
-  let link: Link = $state({
-    name: '',
-    href: '',
-    icon: '',
-    iconUrl: '',
-    order: 0,
-    tags: undefined,
-    target: '',
-  })
+  let {
+    link,
+    indexTopic,
+    indexLink,
+    update,
+  }: {
+    link: Link,
+    indexTopic: number,
+    indexLink: number
+    update: (indexTopic: number, indexLink: number, arg: Link) => void
+  } = $props()
+
+  let _link: Link = $state(structuredClone($state.snapshot(link)))
 
   let iconsList = $state([])
 
   let title = $state('')
 
-  let iconMatching: string = $derived(iconsList.find((iconName) => iconName === link.icon))
+  let tags = $state(_link.tags?.join(', '))
+
+  let iconMatching: string = $derived(iconsList.find((iconName) => iconName === _link.icon))
 
   let iconsListMatching: string[] = $state([])
   $effect(() => {
-    if (!link.name) {
+    if (!_link.name) {
       iconsListMatching = []
       return
     }
     // Set a timeout to update the debounced query after 500ms
     const handler = setTimeout(() => {
       iconsListMatching = iconsList
-        .filter((iconName) => link.name
+        .filter((iconName) => _link.name
           .split(' ')
           .filter((word) => word.length > 2)
           .map((word) => {
@@ -51,20 +56,18 @@
 
   let urlError: string = $state(null)
 
-  let yamlLinkString: string = $derived(dump({ topics: [link] }, {
-    replacer: (_key, value) => {
-      return !value
-        ? undefined
-        : value
-    },
-  }).replace('topics:\n', ''))
-
   let iconUrls = $state([])
+
+  function parseTags () {
+    _link.tags = tags
+      .split(',')
+      .map((tag) => tag.trim())
+  }
 
   async function getUrl () {
     urlError = null
     try {
-      let url = new URL(link.href)
+      let url = new URL(_link.href)
       try {
         // try to get info from URL
         isFetching = true
@@ -78,11 +81,11 @@
         if (response.ok) {
           if (response.redirected) {
             // update input URL href
-            link.href = new URL(response.url)
+            _link.href = new URL(response.url)
               .searchParams
               .get('url')
             // update context to avoid redirect when loading linked images
-            url = new URL(link.href)
+            url = new URL(_link.href)
           }
           const parser = new DOMParser()
           // get <head>
@@ -96,8 +99,8 @@
             .text
             .replaceAll('\t', ' ')
             .trim()
-          if (!link.name) {
-            link.name = title
+          if (!_link.name) {
+            _link.name = title
           }
           // list favicons linked
           iconUrls = []
@@ -126,20 +129,19 @@
         console.warn(error.message)
       }
       isFetching = false
-      if (!link.name) {
+      if (!_link.name) {
         // title not found, use host name
-        link.name = url.hostname
+        _link.name = url.hostname
       }
     } catch (error) {
       isInvalidUrl = true
       urlError = ` (${error.message})`
-      yamlLinkString = ''
       return false
     }
   }
 
   async function fetchAndStoreIconUrl (url: string) {
-    link.iconUrl = await saveUrlFile(url, link.name)
+    _link.iconUrl = await saveUrlFile(url, _link.name)
   }
 
   async function saveUrlFile (url: string, filename: string) {
@@ -181,10 +183,10 @@
     }
   }
 
-  // eslint-disable-next-line promise/catch-or-return
   fetch('./icons-list.json')
     .then((result) => result.json())
-    .then((list) => iconsList = list)
+    .then((list) => iconsList = [...new Set(list)])
+    .catch((reason) => console.warn(`Get icons list failed: ${reason}`))
 
 </script>
 
@@ -193,38 +195,34 @@
   <option value="_self">Current tab (_self)</option>
 </datalist>
 
-<fieldset class="config-container" disabled={isFetching}>
-  <h3>Add a link</h3>
-
+<fieldset disabled={isFetching}>
   <label for="href">URL</label>
-  <input id="href" bind:value={link.href} type="url" placeholder="https://service.domain.ltd/" onchange={getUrl} aria-describedby="url-helper" required aria-invalid={isInvalidUrl} />
+  <input id="href" bind:value={_link.href} type="url" placeholder="https://service.domain.ltd/" onchange={getUrl} aria-describedby="url-helper" required aria-invalid={isInvalidUrl} />
   {#if isInvalidUrl !== false}
     <small id="url-helper">Type an URL{urlError}</small>
   {/if}
 
-  {#if isInvalidUrl === false}
+  {#if _link.href}
     <label for="name">Name</label>
-    <input id="name" bind:value={link.name} type="text" placeholder="Name" aria-describedby="name-helper" required aria-invalid={link.name
+    <input id="name" bind:value={_link.name} type="text" placeholder="Name" aria-describedby="name-helper" required aria-invalid={_link.name
       ? false
       : true}/>
-    {#if link.name !== title}
+    {#if title && _link.name !== title}
       <small id="name-helper">Current url returns title: <i class="selectable">{title}</i></small>
     {/if}
 
     <label for="icon">Icon</label>
     <div>
-      {#each iconsListMatching as icon, index (index)}
-        <button class="icon-url-proposal" title="Use this icon" onclick={() => link.icon = icon}>
-          {#key icon}
-            <Icon {icon} size={2} />
-          {/key}
+      {#each iconsListMatching as icon (icon)}
+        <button class="icon-url-proposal" title="Use this icon" onclick={() => _link.icon = icon}>
+          <Icon {icon} size={2} />
         </button>
       {/each}
     </div>
     <div class="icon-field">
-      <input id="icon" bind:value={link.icon} type="text" placeholder="Icon" aria-invalid={iconMatching
+      <input id="icon" bind:value={_link.icon} type="text" placeholder="Icon" aria-invalid={iconMatching
         ? false
-        : link.icon
+        : _link.icon
           ? true
           : undefined}/>
       <div>
@@ -238,30 +236,33 @@
 
     <label for="iconUrl">Icon URL</label>
     <div>
-      {#each iconUrls as iconUrl, index (index)}
+      {#each iconUrls as iconUrl (iconUrl)}
         <button class="icon-url-proposal" title="Fetch and store this icon using link name" onclick={() => fetchAndStoreIconUrl(iconUrl)}>
           <img src={proxyBaseUrl + iconUrl} height="36" width="36" aria-hidden="true" alt={iconUrl}/>
         </button>
       {/each}
     </div>
     <div class="icon-field">
-      <input id="iconUrl" bind:value={link.iconUrl} type="text" placeholder="/files/icon.svg" aria-describedby="icon-url-helper" />
+      <input id="iconUrl" bind:value={_link.iconUrl} type="text" placeholder="/files/icon.svg" aria-describedby="icon-url-helper" />
       <small id="icon-url-helper">{iconUrls.length
         ? 'Click on an icon to download and save it'
         : 'The file must exist in your `files` folder'}</small>
       <div>
         <!-- svelte-ignore a11y_missing_attribute -->
-        <img src={link.iconUrl} height="18" aria-hidden="true"/>
+        <img src={_link.iconUrl} height="18" aria-hidden="true"/>
       </div>
     </div>
 
     <label for="order">Order</label>
-    <input id="order" bind:value={link.order} type="number" placeholder="0" />
+    <input id="order" bind:value={_link.order} type="number" placeholder="0" />
 
     <label for="target">Target</label>
-    <input id="target" bind:value={link.target} type="text" placeholder="_blank" list="target-proposals" />
+    <input id="target" bind:value={_link.target} type="text" placeholder="_blank" list="target-proposals" />
 
-    <div class="label">Append this to your YAML configuration file:</div>
-    <pre class="selectable"><code>{yamlLinkString}</code></pre>
+    <label for="tags">Tags</label>
+    <input id="tags" bind:value={tags} type="text" placeholder="new tag" aria-describedby="tags-helper" onchange={parseTags}/>
+    <small id="tags-helper">Comma-separated values</small>
+
+    <button onclick={() => update(indexTopic, indexLink, _link)}>Confirm</button>
   {/if}
 </fieldset>
