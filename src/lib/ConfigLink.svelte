@@ -262,7 +262,11 @@
     <label for="tags">Tags</label>
     <input id="tags" bind:value={tags} type="text" placeholder="new tag" aria-describedby="tags-helper" onchange={parseTags}/>
     <small id="tags-helper">Comma-separated values</small>
-
-    <button onclick={() => update(indexTopic, indexLink, _link)}>Confirm</button>
   {/if}
 </fieldset>
+<footer>
+  <button onclick={() => update(indexTopic, indexLink, null)}>Cancel</button>
+  {#if _link.href}
+    <button onclick={() => update(indexTopic, indexLink, _link)}>Confirm</button>
+  {/if}
+</footer>

@@ -52,7 +52,9 @@
   }
 
   const updateLink = (indexTopic: number, indexLink: number, link: Link | null) => {
-    config.topics[indexTopic].links[indexLink] = link
+    if (link) {
+      config.topics[indexTopic].links[indexLink] = link
+    }
     editedLink = null
   }
 

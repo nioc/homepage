@@ -59,7 +59,7 @@ with (
 @mixin hp-dark {
     --hp-hue: 220;
     --hp-background-color: hsl(var(--hp-hue), 22%, 10%);
-    --hp-container-background-color: hsl(var(--hp-hue), 21%, 14%);
+    --hp-container-background-color: hsl(var(--hp-hue), 21%, 12%);
     --hp-element-background-color: hsl(var(--hp-hue), 21%, 22%);
     --hp-element-border-color: hsl(var(--hp-hue), 21%, 30%);
     --hp-element-text-color: hsl(var(--hp-hue), 20%, 75%);
@@ -75,7 +75,7 @@ with (
 :root:not([data-theme=dark]) {
     --hp-hue: 37;
     --hp-background-color: hsl(var(--hp-hue), 4%, 92%);
-    --hp-container-background-color: hsl(var(--hp-hue), 18%, 92%);
+    --hp-container-background-color: hsl(var(--hp-hue), 10%, 90%);
     --hp-element-background-color: hsl(var(--hp-hue), 22%, 80%);
     --hp-element-border-color: hsl(var(--hp-hue), 22%, 70%);
     --hp-element-text-color: hsl(var(--hp-hue), 20%, 25%);
@@ -322,6 +322,9 @@ table {
     td {
         white-space: nowrap;
     }
+    td, th {
+        background-color: rgb(from var(--pico-background-color) r g b/0.5);
+    }
     th.expand {
         width: 99%;
     }
@@ -333,7 +336,7 @@ table {
         }
     }
     tr.subtitle td {
-        background-color: rgb(from var(--pico-background-color) r g b/0.5);
+        background-color: rgb(from var(--pico-background-color) r g b/0.3);
     }
 }
 
@@ -366,7 +369,10 @@ dialog > article {
 dialog {
     animation-duration: ($animation-duration * 4);
     animation-name: modal-overlay;
+    --pico-modal-overlay-background-color: hsl(from var(--hp-background-color) h s calc(l * 0.6)/0.6);
     > article {
+        --pico-card-sectioning-background-color: var(--hp-container-background-color);
+        --pico-card-background-color: var(--hp-background-color);
         animation-delay: $animation-duration;
         animation-name: modal;
     }

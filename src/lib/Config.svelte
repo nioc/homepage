@@ -53,12 +53,12 @@
     <ConfigFile config={mergedConfig} isMerged />
     {#each Object.keys(configFilesObj) as filename (filename)}
       <hr/>
-      <article id={`${filename}.yml`}>
+      <section id={`${filename}.yml`}>
         <h3>File <code>{filename}.yml</code></h3>
         <div style="margin: 0 1.5rem;">
           <ConfigFile bind:config={configFilesObj[filename]} {filename} />
         </div>
-      </article>
+      </section>
     {/each}
   </fieldset>
 {:catch error}
