@@ -9,4 +9,6 @@
 </script>
 
 <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-{@html isSaved ? svgOk : svg}
+{@html isSaved
+  ? svgOk
+  : svg}
