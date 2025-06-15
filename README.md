@@ -138,6 +138,26 @@ In this case, set the environment variables: `NGINX_SSO_GROUPS_HEADER_NAME` (for
 - For a basic home server with 2 users (example: John and Mary): `conf/john.yml` and `conf/mary.yml`
 - For more complex organization, use groups  (example: admin and dev): `conf/dev.yml` and `conf/admin.yml`
 
+### Using Nginx configuration files
+
+you can enrich the Nginx configuration with files in the `/etc/nginx/conf.d/extra/` directory. Their directives will be applied according to their name:
+- `global-*.conf` will be applied to the entire domain,
+- `yaml-*.conf` will be applied to YAML configuration files,
+- `static-*.conf` will be applied to web files (html, js, css, images),
+- `proxy-*.conf` will be applied to proxyfied requests (from the GUI),
+- `dav-*.conf` will be applied to write operations (image upload and YAML file modification).
+
+#### Example: adding basic auth to whole application
+
+Mount a file named `/etc/nginx/conf.d/extra/global-basic-auth.conf` with the following contents:
+
+```conf
+auth_basic           "Homepage login";
+auth_basic_user_file /etc/nginx/conf.d/extra/.htpasswd;
+```
+
+Don't forget to supply the `/etc/nginx/conf.d/extra/.htpasswd` file.
+
 ### Configuration GUI
 
 A graphical configuration page can be accessed by adding `?config` to the url.

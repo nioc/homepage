@@ -7,9 +7,12 @@ server {
 
     server_tokens off;
 
+    include /etc/nginx/conf.d/extra/global-*.conf;
+
     location = /conf/app.yml {
         types { } default_type "application/yaml";
         include /etc/nginx/conf.d/headers-security.conf;
+        include /etc/nginx/conf.d/extra/yaml-*.conf;
         add_header Content-Security-Policy "default-src 'none'";
         root   /usr/share/nginx/html;
         sub_filter 'groupsAdditionalFiles:' 'groupsAdditionalFiles: $http_${NGINX_SSO_GROUPS_HEADER_NAME}';
@@ -19,6 +22,7 @@ server {
 
     location ~* ^/conf/(.+).yml$ {
         include /etc/nginx/conf.d/headers-security.conf;
+        include /etc/nginx/conf.d/extra/yaml-*.conf;
         add_header Content-Security-Policy "default-src 'none'";
         types { } default_type "application/yaml";
         add_header Cache-Control no-cache;
@@ -27,6 +31,7 @@ server {
 
     location ~* ^/files/.*$ {
         include /etc/nginx/conf.d/headers-security.conf;
+        include /etc/nginx/conf.d/extra/static-*.conf;
         add_header Content-Security-Policy "default-src 'none'";
         root   /usr/share/nginx/html;
         try_files $uri $uri/;
@@ -34,6 +39,7 @@ server {
 
     location / {
         include /etc/nginx/conf.d/headers-security.conf;
+        include /etc/nginx/conf.d/extra/static-*.conf;
         add_header Content-Security-Policy "default-src 'self'; img-src 'self' data: http: https:; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'";
         root   /usr/share/nginx/html/app;
         try_files $uri /index.html;
@@ -45,6 +51,7 @@ server {
         proxy_set_header Referer "";
         proxy_pass $arg_url;
         proxy_intercept_errors on;
+        include /etc/nginx/conf.d/extra/proxy-*.conf;
         error_page 301 302 307 308 = @handle_redirect;
     }
 
@@ -52,12 +59,14 @@ server {
         alias /usr/share/nginx/html/files;
         include /etc/nginx/conf.d/dav.conf;
         limit_except PUT { deny all; }
+        include /etc/nginx/conf.d/extra/dav-*.conf;
     }
 
     location /admin/conf {
         alias /usr/share/nginx/html/conf;
         include /etc/nginx/conf.d/dav.conf;
         limit_except PUT { deny all; }
+        include /etc/nginx/conf.d/extra/dav-*.conf;
     }
 
     location @handle_redirect {
