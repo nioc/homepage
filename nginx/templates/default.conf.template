@@ -25,6 +25,7 @@ server {
         add_header X-XSS-Protection "1; mode=block";
         add_header Content-Security-Policy "default-src 'none'";
         types { } default_type "application/yaml";
+        add_header Cache-Control no-cache;
         root   /usr/share/nginx/html;
     }
 
