@@ -1,5 +1,5 @@
 @charset "utf-8";
-@use "pkg:@picocss/pico/scss/pico" 
+@use "pkg:@picocss/pico/scss/pico"
 with (
     $theme-color: "sand",
     $semantic-root-element: "#app",
@@ -71,6 +71,7 @@ with (
         linear-gradient(0deg,   hsl(from var(--hp-background-color) calc(h + 120) 60% calc(l + 10) / var(--hp-background-gradient-opacity)), hsl(from var(--hp-background-color) h s l / 10%) 90%),
         linear-gradient(336deg, hsl(from var(--hp-background-color) h             s   l            / var(--hp-background-gradient-opacity)), hsl(from var(--hp-background-color) h s l / 10%) 80%);
 }
+
 [data-theme=light],
 :root:not([data-theme=dark]) {
     --hp-hue: 37;
@@ -87,9 +88,11 @@ with (
         linear-gradient(0deg,   hsl(from var(--hp-background-color) calc(h - 18)  40% calc(l - 5) / var(--hp-background-gradient-opacity)), hsl(from var(--hp-background-color) h s l / 10%) 90%),
         linear-gradient(160deg, hsl(from var(--hp-background-color) h             s   calc(l + 3) / calc(var(--hp-background-gradient-opacity) * 1.25)), hsl(from var(--hp-background-color) h s l / 10%) 80%);
 }
+
 [data-theme="dark"] {
     @include hp-dark;
 }
+
 @media only screen and (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
         @include hp-dark;
@@ -110,7 +113,8 @@ body {
     user-select: none;
 }
 
-body, h3 {
+body,
+h3 {
     font-family: Inter, SF Pro, Segoe UI, Roboto, Oxygen, Ubuntu, Helvetica Neue, Helvetica, Arial, sans-serif !important;
 }
 
@@ -120,7 +124,9 @@ svg {
     flex-shrink: 0;
 }
 
-input, button, pre {
+input,
+button,
+pre {
     backdrop-filter: blur(10px);
     background-color: rgb(from var(--hp-element-background-color) r g b / 0.5);
     --pico-border-color: var(--hp-element-border-color) !important;
@@ -132,8 +138,12 @@ input:focus {
 
 // workaround for purgeCSS issue https://github.com/FullHuman/purgecss/issues/978
 fieldset[disabled] :is(input:not([type=submit], [type=button], [type=reset])) {
-  opacity: var(--pico-form-element-disabled-opacity);
-  pointer-events: none;
+    opacity: var(--pico-form-element-disabled-opacity);
+    pointer-events: none;
+}
+
+fieldset {
+    min-inline-size: auto;
 }
 
 label:has(input[required]) span::after,
@@ -141,9 +151,11 @@ label:has(+ input[required])::after {
     content: "*";
     color: var(--pico-del-color);
     margin-left: 0.2rem;
-  }
+}
 
-a, a h3, a .tag {
+a,
+a h3,
+a .tag {
     transition: all var(--pico-transition);
 }
 
@@ -176,6 +188,7 @@ a {
     display: flex;
     flex-wrap: wrap;
     margin: 0 1rem;
+
     & .app {
         display: flex;
         align-items: center;
@@ -186,13 +199,16 @@ a {
         margin: 0.5rem;
         border-radius: 0.5em;
         padding: 1em;
+
         & {
             @media screen and (max-width: 1024px) {
                 width: calc(33.33% - 1rem);
             }
+
             @media screen and (max-width: 768px) {
                 width: calc(50% - 1rem);
             }
+
             @media screen and (max-width: 576px) {
                 width: 100%;
             }
@@ -202,11 +218,12 @@ a {
 
 .app-content {
     margin-left: 0.75rem;
+
     & h3 {
-       font-size: 1.25rem;
-       font-weight: 400;
-       margin: 0;
-       color: var(--hp-element-text-color);
+        font-size: 1.25rem;
+        font-weight: 400;
+        margin: 0;
+        color: var(--hp-element-text-color);
     }
 }
 
@@ -215,7 +232,8 @@ body:has(.app:focus) .app:not(:focus) {
     opacity: 0.33;
 }
 
-.app:hover, .app:focus {
+.app:hover,
+.app:focus {
     background-color: rgb(from var(--hp-element-background-color) r g b / 0.6);
 }
 
@@ -224,6 +242,7 @@ body:has(.app:focus) .app:not(:focus) {
         display: flex;
         flex-wrap: wrap;
     }
+
     .tag {
         background-color: var(--hp-tags-background-color);
         color: var(--hp-tags-text-color);
@@ -232,6 +251,7 @@ body:has(.app:focus) .app:not(:focus) {
         padding: 0.2rem 0.4rem;
         font-size: 0.75rem;
     }
+
     .app-content {
         & h3 {
             font-size: 1rem;
@@ -269,12 +289,15 @@ code {
 
 .icon-field {
     position: relative;
+
     input {
         padding-left: calc(var(--pico-form-element-spacing-horizontal) / 2 + 2.5em) !important;
+
         &[aria-invalid] {
             padding-inline-start: calc(var(--pico-form-element-spacing-horizontal) / 2 + 2.5em) !important;
         }
     }
+
     div {
         position: absolute;
         top: 0;
@@ -289,20 +312,25 @@ button {
     display: inline-flex;
     align-items: center;
     --pico-color: unset;
+
     svg {
         width: 18px;
         height: 18px;
+
         &:not(:only-child):first-child {
             margin-right: 0.5em;
         }
+
         &:not(:only-child):last-child {
             margin-left: 0.5em;
         }
     }
+
     &.transparent {
         border: none;
         background-color: transparent;
         padding: 0.25rem;
+
         svg {
             width: 16px;
             height: 16px;
@@ -318,23 +346,33 @@ button.delete svg {
     color: var(--pico-del-color) !important;
 }
 
+.table-container {
+    overflow: auto hidden;
+}
+
 table {
     td {
         white-space: nowrap;
     }
-    td, th {
+
+    td,
+    th {
         background-color: rgb(from var(--pico-background-color) r g b/0.5);
     }
+
     th.expand {
         width: 99%;
     }
+
     th.shrink,
     td.shrink {
         padding: 0;
+
         &:last-child {
             padding-inline-end: var(--pico-spacing);
         }
     }
+
     tr.subtitle td {
         background-color: rgb(from var(--pico-background-color) r g b/0.3);
     }
@@ -350,6 +388,7 @@ table {
 .editable {
     display: inline-flex;
     align-items: center;
+
     button:not(:first-child) {
         padding-inline-start: 0.5em;
     }
@@ -360,23 +399,27 @@ body:has(dialog[open]) {
 }
 
 $animation-duration: 0.1s;
+
 dialog,
-dialog > article {
+dialog>article {
     animation-duration: $animation-duration;
     animation-timing-function: ease-in-out;
     animation-fill-mode: both;
 }
+
 dialog {
     animation-duration: ($animation-duration * 4);
     animation-name: modal-overlay;
     --pico-modal-overlay-background-color: hsl(from var(--hp-background-color) h s calc(l * 0.6)/0.6);
-    > article {
+
+    >article {
         --pico-card-sectioning-background-color: var(--hp-container-background-color);
         --pico-card-background-color: var(--hp-background-color);
         animation-delay: $animation-duration;
         animation-name: modal;
     }
 }
+
 @keyframes modal-overlay {
     from {
         backdrop-filter: none;

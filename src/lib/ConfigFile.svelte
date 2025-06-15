@@ -92,68 +92,69 @@
   }
 </script>
 
-<table>
-  <thead>
-    <tr>
-      <th scope="col"></th>
-      <th scope="col">Name</th>
-      <th scope="col" class="expand">URL</th>
-      <th scope="col">Tags</th>
-      <th scope="col">Order</th>
-      {#if isMerged}<th scope="col">Source</th>
-      {:else}<th scope="col" colspan="2" class="shrink"></th>{/if}
-    </tr>
-  </thead>
-  <tbody>
-    {#each config.topics as topic, indexTopic (topic)}
-      <tr class="subtitle">
-        <td></td>
-        {#if isMerged}
-          <td colspan="3"><strong>{topic.name}</strong></td>
-          <td>{topic.order}</td>
-          <td></td>
-        {:else}
-          <td colspan="3"><Editable bind:value={config.topics[indexTopic].name} tag="strong" type="text" placeholder="Topic name" title="Edit topic name" isInvalid={(value: string) => value.length === 0} /></td>
-          <td><Editable bind:value={config.topics[indexTopic].order} tag="span" type="number" placeholder="Topic order" title="Edit topic order" size={1} style="min-width: min-content;"/></td>
-          <td class="shrink"><button onclick={() => topic.links.push({ name: 'New link', href: '', source: filename }) } title="Add link" class="transparent"><IconAddLink/></button></td>
-          <td class="shrink"><button onclick={() => removeTopic(indexTopic)} title="Delete topic" class="transparent delete"><IconTrash/></button></td>
-        {/if}
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col" class="expand">URL</th>
+        <th scope="col">Tags</th>
+        <th scope="col">Order</th>
+        {#if isMerged}<th scope="col">Source</th>
+        {:else}<th scope="col" colspan="2" class="shrink"></th>{/if}
       </tr>
-      {#each topic.links as link, indexLink (link)}
-        <tr>
-          <td>
-            {#if link.iconUrl}
-              <!-- svelte-ignore a11y_missing_attribute -->
-              <img src={link.iconUrl} height="18" aria-hidden="true"/>
-            {:else if link.icon}
-              <Icon icon={link.icon} size={1} />
-            {/if}
-          </td>
-          <td>{link.name}</td>
-          <td>{link.href}</td>
-          <td>{link.tags?.join(', ')}</td>
-          <td>{link.order}</td>
+    </thead>
+    <tbody>
+      {#each config.topics as topic, indexTopic (topic)}
+        <tr class="subtitle">
+          <td></td>
           {#if isMerged}
-            <td><a href="#{link.source}.yml">{link.source}.yml</a></td>
+            <td colspan="3"><strong>{topic.name}</strong></td>
+            <td>{topic.order}</td>
+            <td></td>
           {:else}
-            <td class="shrink">
-              <button onclick={() => editedLink = { indexTopic, indexLink }} title="Edit link" class="transparent"><IconPencil/></button>
-              {#if editedLink?.indexTopic === indexTopic && editedLink?.indexLink === indexLink}
-                <Modal title="Edit link" onClose={() => editedLink = null}>
-                  <ConfigLink {link} {indexTopic} {indexLink} update={updateLink}/>
-                </Modal>
-              {/if}
-            </td>
-            <td class="shrink">
-              <button onclick={() => removeLink(indexTopic, indexLink)} title="Delete link" class="transparent delete"><IconTrash/></button>
-            </td>
+            <td colspan="3"><Editable bind:value={config.topics[indexTopic].name} tag="strong" type="text" placeholder="Topic name" title="Edit topic name" isInvalid={(value: string) => value.length === 0} /></td>
+            <td><Editable bind:value={config.topics[indexTopic].order} tag="span" type="number" placeholder="Topic order" title="Edit topic order" size={1} style="min-width: min-content;"/></td>
+            <td class="shrink"><button onclick={() => topic.links.push({ name: 'New link', href: '', source: filename }) } title="Add link" class="transparent"><IconAddLink/></button></td>
+            <td class="shrink"><button onclick={() => removeTopic(indexTopic)} title="Delete topic" class="transparent delete"><IconTrash/></button></td>
           {/if}
         </tr>
+        {#each topic.links as link, indexLink (link)}
+          <tr>
+            <td>
+              {#if link.iconUrl}
+                <!-- svelte-ignore a11y_missing_attribute -->
+                <img src={link.iconUrl} height="18" aria-hidden="true"/>
+              {:else if link.icon}
+                <Icon icon={link.icon} size={1} />
+              {/if}
+            </td>
+            <td>{link.name}</td>
+            <td>{link.href}</td>
+            <td>{link.tags?.join(', ')}</td>
+            <td>{link.order}</td>
+            {#if isMerged}
+              <td><a href="#{link.source}.yml">{link.source}.yml</a></td>
+            {:else}
+              <td class="shrink">
+                <button onclick={() => editedLink = { indexTopic, indexLink }} title="Edit link" class="transparent"><IconPencil/></button>
+                {#if editedLink?.indexTopic === indexTopic && editedLink?.indexLink === indexLink}
+                  <Modal title="Edit link" onClose={() => editedLink = null}>
+                    <ConfigLink {link} {indexTopic} {indexLink} update={updateLink}/>
+                  </Modal>
+                {/if}
+              </td>
+              <td class="shrink">
+                <button onclick={() => removeLink(indexTopic, indexLink)} title="Delete link" class="transparent delete"><IconTrash/></button>
+              </td>
+            {/if}
+          </tr>
+        {/each}
       {/each}
-    {/each}
-  </tbody>
-</table>
-
+    </tbody>
+  </table>
+</div>
 {#if !isMerged}
   {#if message}
     <Modal title={message.title} onClose={() => message = undefined}>
