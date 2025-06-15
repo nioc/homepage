@@ -59,7 +59,7 @@ services:
 ### Within an Nginx container
 
 Unzip files from the archive into a directory (`/home/myuser/homepage` for example), you should have:
-- Nginx configuration file: `default.conf.template`
+- Nginx configuration templates folder: `templates`
 - builded app folder: `homepage-app`
 
 Create a `conf` folder
@@ -75,7 +75,7 @@ services:
     ports:
     - "8080:80"
     volumes:
-      - /home/myuser/homepage/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - /home/myuser/homepage/templates:/etc/nginx/templates:ro
       - /home/myuser/homepage/homepage-app:/usr/share/nginx/html/app:ro
       - /home/myuser/homepage/conf:/usr/share/nginx/html/conf:ro
       # - /home/myuser/homepage/files:/usr/share/nginx/html/files #required if you use locally downloaded external icons

@@ -52,9 +52,9 @@ jobs:
         run: |
           mkdir archive &&
           cp dist archive/homepage-app -r &&
-          cp README.md LICENSE.md nginx/templates/default.conf.template archive/ &&
+          cp README.md LICENSE.md nginx/templates -r archive/ &&
           cd archive &&
-          tar zcvf homepage-${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}.tar.gz README.md LICENSE.md default.conf.template homepage-app/ &&
+          tar zcvf homepage-${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}.tar.gz README.md LICENSE.md templates/ homepage-app/ &&
           mv homepage-${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}.tar.gz ../ &&
           rm -r ../archive
 
