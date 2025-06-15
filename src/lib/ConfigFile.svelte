@@ -67,7 +67,11 @@
       })
       return topic
     })
+    _config.groupsAdditionalFiles = null
+    _config.userAdditionalFile = null
     return dump(_config)
+      .replace('groupsAdditionalFiles: null', 'groupsAdditionalFiles: ')
+      .replace('userAdditionalFile: null', 'userAdditionalFile: ')
   }
 
   const saveFile = async () => {
