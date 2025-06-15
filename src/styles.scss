@@ -136,6 +136,28 @@ input:focus {
     box-shadow: 0 0 12px 3px var(--hp-element-border-color);
 }
 
+div:has(input[type="search"]) {
+    position: relative;
+    & input[type="search"] {
+        margin-bottom: unset;
+        padding-inline-end: 2.5rem;
+    }
+    & button {
+        position: absolute;
+        border: none;
+        border-radius: 1rem;
+        backdrop-filter: unset;
+        display: flex;
+        background: var(--pico-icon-close) center no-repeat;
+        background-size: auto 1rem;
+        inset-inline-end: 0.6rem;
+        inset-block: 0;
+        width: 2rem;
+        height: 2rem;
+        margin: auto;
+    }
+}
+
 // workaround for purgeCSS issue https://github.com/FullHuman/purgecss/issues/978
 fieldset[disabled] :is(input:not([type=submit], [type=button], [type=reset])) {
     opacity: var(--pico-form-element-disabled-opacity);

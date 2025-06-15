@@ -43,7 +43,10 @@
 </script>
 
 {#if displaySearch}
-  <input bind:value={search} type="search" placeholder="Search" />
+  <div>
+    <input bind:value={search} type="search" placeholder="Search" />
+    <button onclick={() => search = ''} aria-label="Clear search"></button>
+  </div>
 {/if}
 
 {#each displayedTopics as { name, links } (name)}
