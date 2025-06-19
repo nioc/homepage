@@ -11,7 +11,7 @@ server {
 
     location = /conf/app.yml {
         types { } default_type "application/yaml";
-        include /etc/nginx/conf.d/headers-security.conf;
+        include /etc/nginx/conf.d/homepage/headers-security.conf;
         include /etc/nginx/conf.d/extra/yaml-*.conf;
         add_header Content-Security-Policy "default-src 'none'";
         root   /usr/share/nginx/html;
@@ -21,7 +21,7 @@ server {
     }
 
     location ~* ^/conf/(.+).yml$ {
-        include /etc/nginx/conf.d/headers-security.conf;
+        include /etc/nginx/conf.d/homepage/headers-security.conf;
         include /etc/nginx/conf.d/extra/yaml-*.conf;
         add_header Content-Security-Policy "default-src 'none'";
         types { } default_type "application/yaml";
@@ -30,7 +30,7 @@ server {
     }
 
     location ~* ^/files/.*$ {
-        include /etc/nginx/conf.d/headers-security.conf;
+        include /etc/nginx/conf.d/homepage/headers-security.conf;
         include /etc/nginx/conf.d/extra/static-*.conf;
         add_header Content-Security-Policy "default-src 'none'";
         root   /usr/share/nginx/html;
@@ -38,7 +38,7 @@ server {
     }
 
     location / {
-        include /etc/nginx/conf.d/headers-security.conf;
+        include /etc/nginx/conf.d/homepage/headers-security.conf;
         include /etc/nginx/conf.d/extra/static-*.conf;
         add_header Content-Security-Policy "default-src 'self'; img-src 'self' data: http: https:; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'";
         root   /usr/share/nginx/html/app;
@@ -68,15 +68,13 @@ server {
 
     location /uploads {
         alias /usr/share/nginx/html/files;
-        include /etc/nginx/conf.d/dav.conf;
-        limit_except PUT { deny all; }
+        include /etc/nginx/conf.d/homepage/dav.conf;
         include /etc/nginx/conf.d/extra/dav-*.conf;
     }
 
     location /admin/conf {
         alias /usr/share/nginx/html/conf;
-        include /etc/nginx/conf.d/dav.conf;
-        limit_except PUT { deny all; }
+        include /etc/nginx/conf.d/homepage/dav.conf;
         include /etc/nginx/conf.d/extra/dav-*.conf;
     }
 
