@@ -9,6 +9,26 @@
 
 Light, simple but attractive and customizable home page to your favorite services
 
+- [Features](#features)
+- [Installation](#installation)
+  - [From docker image](#from-docker-image)
+  - [Within an Nginx container](#within-an-nginx-container)
+  - [With an existing web server](#with-an-existing-web-server)
+- [Configuration](#configuration)
+  - [Base](#base)
+  - [Using SSO](#using-sso)
+  - [Using Nginx configuration files](#using-nginx-configuration-files)
+    - [Example: adding basic auth to whole application](#example-adding-basic-auth-to-whole-application)
+  - [Configuration GUI](#configuration-gui)
+    - [Use of page metadata](#use-of-page-metadata)
+    - [Data sanitization for proxyfied requests](#data-sanitization-for-proxyfied-requests)
+    - [Access SSO-protected applications](#access-sso-protected-applications)
+    - [External icons persistence](#external-icons-persistence)
+    - [YAML file edition](#yaml-file-edition)
+  - [Advanced styling](#advanced-styling)
+- [Versioning](#versioning)
+- [License](#license)
+
 ## Features
 
 - simple configuration with YAML files and GUI (no backend required)
@@ -52,6 +72,8 @@ services:
     # - NGINX_GZIP=off #default
     # - NGINX_SSO_GROUPS_HEADER_NAME=Remote_Groups #default
     # - NGINX_SSO_USER_HEADER_NAME=Remote_User #default
+    # - NGINX_SSO_DOMAIN_REGEX=^$ #default
+    # - NGINX_SSO_PROVIDER=authelia #default
     # - NGINX_RESOLVER=127.0.0.11 #default
     # - NGINX_FETCH_FILE_METHOD=off #default, set PUT for uploading external icons
 ```
@@ -85,6 +107,8 @@ services:
     - NGINX_GZIP=off
     - NGINX_SSO_GROUPS_HEADER_NAME=Remote_Groups
     - NGINX_SSO_USER_HEADER_NAME=Remote_User
+    - NGINX_SSO_DOMAIN_REGEX=\.?mydomain
+    - NGINX_SSO_PROVIDER=authelia
     - NGINX_RESOLVER=127.0.0.11
     - NGINX_FETCH_FILE_METHOD=PUT
 ```
@@ -140,7 +164,7 @@ In this case, set the environment variables: `NGINX_SSO_GROUPS_HEADER_NAME` (for
 
 ### Using Nginx configuration files
 
-you can enrich the Nginx configuration with files in the `/etc/nginx/conf.d/extra/` directory. Their directives will be applied according to their name:
+You can enrich the Nginx configuration with files in the `/etc/nginx/conf.d/extra/` directory. Their directives will be applied according to their name:
 - `global-*.conf` will be applied to the entire domain,
 - `yaml-*.conf` will be applied to YAML configuration files,
 - `static-*.conf` will be applied to web files (html, js, css, images),
@@ -167,6 +191,24 @@ This allows you to simply add a link via a form (generating the YAML ready to ad
 #### Use of page metadata
 
 In order to retrieve the web page's metadata (title and icon), it is necessary to value a valid DNS resolver via the variable `NGINX_RESOLVER` (with `9.9.9.9` for example), by default, it uses the docker internal resolver (`127.0.0.11`).
+
+#### Data sanitization for proxyfied requests
+
+To avoid propagating your data (cookies, headers) during proxyfied requests, the following elements are removed:
+- cookies,
+- headers x-forwarded-* (for, method, proto, host, uri),
+- SSO provider-specific headers, using the `NGINX_SSO_PROVIDER` environment variable :
+  - Authelia:
+    - `Remote-Email`,
+    - `Remote-Groups`,
+    - `Remote-Name`,
+    - `Remote-User`
+
+#### Access SSO-protected applications
+
+As described in the previous paragraph, the application's reverse proxy deletes SSO information (cookies, header, etc.), so, access to applications protected by SSO will not work (redirection to the login page).
+
+To avoid this, you can use the `NGINX_SSO_DOMAIN_REGEX` environment variable to define a regular expression for the urls for which this information will be sent.
 
 #### External icons persistence
 
@@ -241,4 +283,4 @@ See the [releases](https://github.com/nioc/homepage/releases) on this repository
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE.md) file for details
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](https://github.com/nioc/homepage/blob/main/LICENSE.md) file for details

@@ -51,6 +51,17 @@ server {
         proxy_set_header Referer "";
         proxy_pass $arg_url;
         proxy_intercept_errors on;
+        # remove homepage header
+        proxy_set_header x-homepage-url "";
+        # remove forward proxy headers
+        proxy_set_header x-forwarded-for "";
+        proxy_set_header x-forwarded-method "";
+        proxy_set_header x-forwarded-proto "";
+        proxy_set_header x-forwarded-host "";
+        proxy_set_header x-forwarded-uri "";
+        # remove SSO provider-specific headers
+        include /etc/nginx/conf.d/homepage/sso-${NGINX_SSO_PROVIDER}.conf;
+        # user-defined rules
         include /etc/nginx/conf.d/extra/proxy-*.conf;
         error_page 301 302 307 308 = @handle_redirect;
     }

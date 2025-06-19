@@ -1,0 +1,22 @@
+# default: removing SSO headers
+set $sendingCookie "";
+set $sendingEmail "";
+set $sendingGroups "";
+set $sendingName "";
+set $sendingUser "";
+
+if ($arg_url ~* ${NGINX_SSO_DOMAIN_REGEX}) {
+    # url is behind SSO, keeping headers
+    set $sendingCookie $http_cookie;
+    set $sendingEmail $http_Remote_Email;
+    set $sendingGroups $http_Remote_Groups;
+    set $sendingName $http_Remote_Name;
+    set $sendingUser $http_Remote_User;
+}
+
+# set SSO headers
+proxy_set_header Cookie $sendingCookie;
+proxy_set_header Remote-Email $sendingEmail;
+proxy_set_header Remote-Groups $sendingGroups;
+proxy_set_header Remote-Name $sendingName;
+proxy_set_header Remote-User $sendingUser;
