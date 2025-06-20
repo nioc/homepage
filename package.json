@@ -38,17 +38,17 @@
     "eslint-plugin-depend": "^1.2.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-promise": "^7.2.1",
-    "eslint-plugin-svelte": "^3.9.2",
+    "eslint-plugin-svelte": "^3.9.3",
     "globals": "^16.2.0",
     "js-yaml": "^4.1.0",
     "mime-db": "^1.54.0",
     "rollup-plugin-visualizer": "^6.0.3",
     "sass-embedded": "^1.89.2",
     "simple-icons": "^15.2.0",
-    "svelte": "^5.34.3",
-    "svelte-check": "^4.2.1",
+    "svelte": "^5.34.7",
+    "svelte-check": "^4.2.2",
     "svelte-portal": "^2.2.1",
-    "typescript-eslint": "^8.34.0",
+    "typescript-eslint": "^8.34.1",
     "vite": "^6.3.5"
   }
 }
