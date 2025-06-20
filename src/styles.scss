@@ -138,10 +138,12 @@ input:focus {
 
 div:has(input[type="search"]) {
     position: relative;
+
     & input[type="search"] {
         margin-bottom: unset;
         padding-inline-end: 2.5rem;
     }
+
     & button {
         position: absolute;
         border: none;
@@ -380,6 +382,12 @@ table {
     td,
     th {
         background-color: rgb(from var(--pico-background-color) r g b/0.5);
+        height: 42px;
+
+        img,
+        svg {
+            vertical-align: middle;
+        }
     }
 
     th.expand {
@@ -392,6 +400,10 @@ table {
 
         &:last-child {
             padding-inline-end: var(--pico-spacing);
+        }
+
+        &:first-child {
+            padding-inline-start: var(--pico-spacing);
         }
     }
 
@@ -454,4 +466,22 @@ dialog {
         transform: translateY(-100%);
         opacity: 0;
     }
+}
+
+.sort-handle {
+    cursor: grab;
+
+    svg {
+        width: 20px;
+    }
+}
+
+.sort-dragging {
+    opacity: 0.3;
+}
+
+.sort-over * {
+    font-weight: bolder;
+    position: relative;
+    left: 6px;
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { dump } from 'js-yaml'
-  import type { Link, Config } from '../types/config'
+  import type { Link, Config, Topic } from '../types/config'
   import ConfigLink from './ConfigLink.svelte'
   import Editable from './Editable.svelte'
   import Modal, { type ConfirmModal } from './Modal.svelte'
@@ -9,6 +9,8 @@
   import IconPencil from './IconPencil.svelte'
   import IconAddLink from './IconAddLink.svelte'
   import IconSave from './IconSave.svelte'
+  import IconDrag from './IconDrag.svelte'
+  import { sortable } from './utils'
 
   let {
     config = $bindable(),
@@ -19,6 +21,8 @@
     filename?: string,
     isMerged?: boolean,
   } = $props()
+
+  let sortableList: HTMLElement
 
   let editedLink: {indexTopic: number, indexLink: number} = $state(null)
 
@@ -94,13 +98,40 @@
     }
     isSaving = false
   }
+
+  const updateSortable = (topics: Topic[]) => {
+    const size = topics.length
+    if (size > 0) {
+      sortable(sortableList, 'tr:not(.subtitle)', '.sort-handle', (_a, _b) => {
+        const a = {
+          topic: parseInt(_a.dataset.topic),
+          link: parseInt(_a.dataset.link),
+        }
+        const b = {
+          topic: parseInt(_b.dataset.topic),
+          link: parseInt(_b.dataset.link),
+        }
+        const moved = config.topics[a.topic].links[a.link]
+        config.topics[a.topic].links.splice(a.link, 1)
+        config.topics[b.topic].links.splice(b.link, 0, moved)
+      })
+    }
+  }
+
+  $effect(() => {
+    if (!isMerged) {
+      updateSortable(config.topics)
+    }
+  })
 </script>
 
 <div class="table-container">
   <table>
     <thead>
       <tr>
-        <th scope="col"></th>
+        <th scope="col" colspan={isMerged
+          ? 1
+          : 2}></th>
         <th scope="col">Name</th>
         <th scope="col" class="expand">URL</th>
         <th scope="col">Tags</th>
@@ -109,10 +140,12 @@
         {:else}<th scope="col" colspan="2" class="shrink"></th>{/if}
       </tr>
     </thead>
-    <tbody>
+    <tbody bind:this={sortableList}>
       {#each config.topics as topic, indexTopic (topic)}
         <tr class="subtitle">
-          <td></td>
+          <td colspan={isMerged
+            ? 1
+            : 2}></td>
           {#if isMerged}
             <td colspan="3"><strong>{topic.name}</strong></td>
             <td>{topic.order}</td>
@@ -125,7 +158,8 @@
           {/if}
         </tr>
         {#each topic.links as link, indexLink (link)}
-          <tr>
+          <tr data-topic={indexTopic} data-link={indexLink}>
+            {#if !isMerged}<td class="sort-handle shrink" title="Drag and drop for basic ordering"><IconDrag/></td>{/if}
             <td>
               {#if link.iconUrl}
                 <!-- svelte-ignore a11y_missing_attribute -->

@@ -78,3 +78,70 @@ export function mergeConfigFile (configFile: Config, mergedConfig: Config) {
     }
   })
 }
+
+export function sortable (list: HTMLElement, itemsSelector: string, handleSelector: string, ondrop: (dragged: HTMLElement, dropOn: HTMLElement) => void = () => {}) {
+  let dragged: HTMLElement | null = null
+  if (list === null) {
+    return
+  }
+  for (const draggable of list.querySelectorAll(handleSelector) as NodeListOf<HTMLElement>) {
+    draggable.draggable = true
+
+    draggable.ondragstart = (e: DragEvent) => {
+      dragged = (e.target as HTMLElement).closest(itemsSelector) as HTMLElement
+      if (dragged === null) {
+        return
+      }
+      dragged.classList.add('sort-dragging')
+      e.dataTransfer.dropEffect = 'move'
+      e.dataTransfer.effectAllowed = 'move'
+      e.dataTransfer.setDragImage(dragged, 0, 0)
+      let currentOverItem: HTMLElement | null = null
+      let hasCurrentOver = false
+
+      for (const item of list.querySelectorAll(itemsSelector) as NodeListOf<HTMLElement>) {
+
+        if (item !== dragged) {
+
+          item.ondragover = (e: DragEvent) => {
+            e.preventDefault()
+          }
+
+          item.ondragenter = (e: DragEvent) => {
+            e.preventDefault()
+            if (item === dragged) {
+              return
+            }
+            currentOverItem = item
+            hasCurrentOver = true
+            item.classList.add('sort-over')
+          }
+
+          item.ondrop = (e) => {
+            e.preventDefault()
+            if (dragged && dragged != item) {
+              ondrop(dragged, item)
+            }
+          }
+        }
+
+        item.ondragleave = (e: DragEvent) => {
+          // as dragLeave comes after dragEnter...
+          if (!hasCurrentOver || (e.target as HTMLElement).closest(itemsSelector) !== currentOverItem) {
+            item.classList.remove('sort-over')
+          }
+          hasCurrentOver = false
+        }
+      }
+
+      draggable.ondragend = () => {
+        hasCurrentOver = false
+        for (const item of list.querySelectorAll(itemsSelector)) {
+          item.classList.remove('sort-over', 'sort-dragging')
+        }
+      }
+
+    }
+  }
+
+}
