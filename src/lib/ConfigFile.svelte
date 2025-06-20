@@ -45,6 +45,10 @@
   }
 
   const removeLink = (indexTopic: number, indexLink: number) => {
+    if (!config.topics[indexTopic].links[indexLink].href) {
+      config.topics[indexTopic].links.splice(indexLink, 1)
+      return
+    }
     confirmModal = {
       text: `Are you sure you want to delete the link “${config.topics[indexTopic].links[indexLink].name}”?`,
       confirm: () => {
@@ -94,6 +98,9 @@
         throw new Error(`YAML file upload failed: ${uploadResponse.statusText}`)
       }
       isSaved = true
+      setTimeout(() => {
+        isSaved = false
+      }, 1000)
     } catch (error) {
       message = {
         title: 'Upload failed',
@@ -218,5 +225,6 @@
   </details>
   <p>
     <button title="Save YAML file" onclick={saveFile} disabled={isSaving}><span>Save</span><IconSave {isSaved} /></button>
+    {#if isSaved}<small class="is-success fade">File saved successfully</small>{/if}
   </p>
 {/if}

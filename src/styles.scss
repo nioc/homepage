@@ -70,6 +70,7 @@ with (
         linear-gradient(200deg, hsl(from var(--hp-background-color) calc(h - 20)  40% l            / var(--hp-background-gradient-opacity)), hsl(from var(--hp-background-color) h s l / 10%) 80%),
         linear-gradient(0deg,   hsl(from var(--hp-background-color) calc(h + 120) 60% calc(l + 10) / var(--hp-background-gradient-opacity)), hsl(from var(--hp-background-color) h s l / 10%) 90%),
         linear-gradient(336deg, hsl(from var(--hp-background-color) h             s   l            / var(--hp-background-gradient-opacity)), hsl(from var(--hp-background-color) h s l / 10%) 80%);
+    --hp-success: rgb(76, 154.5, 137.5);
 }
 
 [data-theme=light],
@@ -87,6 +88,7 @@ with (
         linear-gradient(260deg, hsl(from var(--hp-background-color) calc(h + 80)  30% calc(l - 2) / var(--hp-background-gradient-opacity)), hsl(from var(--hp-background-color) h s l / 10%) 30%),
         linear-gradient(0deg,   hsl(from var(--hp-background-color) calc(h - 18)  40% calc(l - 5) / var(--hp-background-gradient-opacity)), hsl(from var(--hp-background-color) h s l / 10%) 90%),
         linear-gradient(160deg, hsl(from var(--hp-background-color) h             s   calc(l + 3) / calc(var(--hp-background-gradient-opacity) * 1.25)), hsl(from var(--hp-background-color) h s l / 10%) 80%);
+    --hp-success: rgb(42, 123, 111);
 }
 
 [data-theme="dark"] {
@@ -464,6 +466,24 @@ dialog {
 @keyframes modal {
     from {
         transform: translateY(-100%);
+        opacity: 0;
+    }
+}
+
+.is-success {
+    color: var(--hp-success);
+}
+
+$fade-animation-duration: 0.8s;
+
+.fade {
+    animation-duration: calc($fade-animation-duration / 2);
+    animation-name: fade;
+    animation-delay: $fade-animation-duration;
+}
+
+@keyframes fade {
+    to {
         opacity: 0;
     }
 }
