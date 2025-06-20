@@ -67,6 +67,10 @@
     _config.topics = _config.topics.map((topic) => {
       topic.links.map((link) => {
         link.source = undefined
+        if (link.order === null) {
+          delete link.order
+        }
+        link.tags = link.tags?.filter((tag) => tag !== '')
         return link
       })
       return topic
