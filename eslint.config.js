@@ -1,56 +1,95 @@
 import js from '@eslint/js'
 import eslintPluginSvelte from 'eslint-plugin-svelte'
 import pluginPromise from 'eslint-plugin-promise'
-import stylisticJs from '@stylistic/eslint-plugin-js'
+import stylistic from '@stylistic/eslint-plugin'
 import depend from 'eslint-plugin-depend'
 import globals from 'globals'
 import ts from 'typescript-eslint'
 
 export default [
-  {
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-      },
-    },
-    files: ['**/*.svelte', '**/*.js'],
-  },
+  // Recommended rules
   js.configs.recommended,
   ...ts.configs.recommended,
+  ...eslintPluginSvelte.configs['flat/recommended'],
   pluginPromise.configs['flat/recommended'],
   depend.configs['flat/recommended'],
-  stylisticJs.configs['all'],
-  ...eslintPluginSvelte.configs['flat/recommended'],
+  stylistic.configs['recommended'],
+
+  // JS/TS rules
   {
-    files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
-    // See more details at: https://typescript-eslint.io/packages/parser/
+    files: ['**/*.{js,ts}'],
     languageOptions: {
+      parser: ts.parser,
       parserOptions: {
-        projectService: true,
-        extraFileExtensions: ['.svelte'],
-        parser: ts.parser,
+        projectService: false,
       },
+      globals: globals.browser,
+    },
+    plugins: {
+      stylistic,
+      promise: pluginPromise,
+      depend,
+    },
+    rules: {
+      'stylistic/comma-dangle': ['error', 'always-multiline'],
+      'stylistic/semi': ['error', 'never'],
+      'stylistic/quotes': ['error', 'single'],
+      'stylistic/quote-props': ['error', 'as-needed'],
+      'stylistic/object-curly-spacing': ['error', 'always'],
+      'stylistic/padded-blocks': ['off'],
+      'stylistic/function-call-argument-newline': ['error', 'consistent'],
+      'stylistic/dot-location': ['error', 'property'],
+      'stylistic/indent': ['error', 2],
+      'stylistic/lines-around-comment': ['off'],
+      'stylistic/implicit-arrow-linebreak': ['off'],
+      'stylistic/array-element-newline': ['error', 'consistent'],
+      'stylistic/array-bracket-newline': ['error', 'consistent'],
+      'stylistic/function-paren-newline': ['off'],
+      'stylistic/object-property-newline': ['off', { allowAllPropertiesOnSameLine: true }],
+      'stylistic/multiline-comment-style': ['off'],
+      'stylistic/no-confusing-arrow': 'off',
+      'depend/ban-dependencies': ['error', {
+        allowed: ['js-yaml'], // alternative is larger
+      }],
     },
   },
+
+  // Svelte rules
   {
+    files: ['**/*.svelte'],
+    languageOptions: {
+      parser: eslintPluginSvelte.parser,
+      parserOptions: {
+        parser: ts.parser,
+        extraFileExtensions: ['.svelte'],
+        projectService: false,
+      },
+      globals: globals.browser,
+    },
+    plugins: {
+      svelte: eslintPluginSvelte,
+      stylistic,
+      promise: pluginPromise,
+      depend,
+    },
     rules: {
-      '@stylistic/js/comma-dangle': ['error', 'always-multiline'],
-      '@stylistic/js/semi': ['error', 'never'],
-      '@stylistic/js/quotes': ['error', 'single'],
-      '@stylistic/js/quote-props': ['error', 'as-needed'],
-      '@stylistic/js/object-curly-spacing': ['error', 'always'],
-      '@stylistic/js/padded-blocks': ['off'],
-      '@stylistic/js/function-call-argument-newline': ['error', 'consistent'],
-      '@stylistic/js/dot-location': ['error', 'property'],
-      '@stylistic/js/indent': ['error', 2],
-      '@stylistic/js/lines-around-comment': ['off'],
-      '@stylistic/js/implicit-arrow-linebreak': ['off'],
-      '@stylistic/js/array-element-newline': ['error', 'consistent'],
-      '@stylistic/js/array-bracket-newline': ['error', 'consistent'],
-      '@stylistic/js/function-paren-newline': ['off'],
-      '@stylistic/js/object-property-newline': ['off', { allowAllPropertiesOnSameLine: true }],
-      '@stylistic/js/multiline-comment-style': ['off'],
-      '@stylistic/js/no-confusing-arrow': 'off',
+      'stylistic/comma-dangle': ['error', 'always-multiline'],
+      'stylistic/semi': ['error', 'never'],
+      'stylistic/quotes': ['error', 'single'],
+      'stylistic/quote-props': ['error', 'as-needed'],
+      'stylistic/object-curly-spacing': ['error', 'always'],
+      'stylistic/padded-blocks': ['off'],
+      'stylistic/function-call-argument-newline': ['error', 'consistent'],
+      'stylistic/dot-location': ['error', 'property'],
+      'stylistic/indent': ['error', 2],
+      'stylistic/lines-around-comment': ['off'],
+      'stylistic/implicit-arrow-linebreak': ['off'],
+      'stylistic/array-element-newline': ['error', 'consistent'],
+      'stylistic/array-bracket-newline': ['error', 'consistent'],
+      'stylistic/function-paren-newline': ['off'],
+      'stylistic/object-property-newline': ['off', { allowAllPropertiesOnSameLine: true }],
+      'stylistic/multiline-comment-style': ['off'],
+      'stylistic/no-confusing-arrow': 'off',
       'depend/ban-dependencies': ['error', {
         allowed: ['js-yaml'], // alternative is larger
       }],
