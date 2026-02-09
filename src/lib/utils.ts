@@ -1,7 +1,7 @@
 import type { Config, Link, Topic } from '../types/config'
 import { load } from 'js-yaml'
 
-export async function fetchConfigFile (fileName: string) {
+export async function fetchConfigFile(fileName: string) {
   const response = await fetch(`./conf/${fileName}.yml`)
   const configApp: Config = load(await response.text(), {
     onWarning: (e) => console.warn(e),
@@ -20,7 +20,7 @@ export async function fetchConfigFile (fileName: string) {
   return configApp
 }
 
-export function sortItems (a: Topic | Link, b: Topic | Link) {
+export function sortItems(a: Topic | Link, b: Topic | Link) {
   if (a.order === undefined) {
     return b.order === undefined
       ? 0
@@ -37,7 +37,7 @@ export function sortItems (a: Topic | Link, b: Topic | Link) {
     : -1
 }
 
-export function getAdditionalFiles (config: Config) {
+export function getAdditionalFiles(config: Config) {
   return [
     // add group files (set by Nginx according to SSO header) only if it matches allowed pattern
     ...config.groupsAdditionalFiles.split(',')
@@ -51,7 +51,7 @@ export function getAdditionalFiles (config: Config) {
     .filter((fileName) => fileName)
 }
 
-export function mergeConfigFile (configFile: Config, mergedConfig: Config) {
+export function mergeConfigFile(configFile: Config, mergedConfig: Config) {
   structuredClone(configFile).topics.forEach((topic) => {
     const indexTopic = mergedConfig.topics.findIndex((previousTopic) => previousTopic.name === topic.name)
     if (indexTopic === -1) {
@@ -79,7 +79,7 @@ export function mergeConfigFile (configFile: Config, mergedConfig: Config) {
   })
 }
 
-export function sortable (list: HTMLElement, itemsSelector: string, handleSelector: string, ondrop: (dragged: HTMLElement, dropOn: HTMLElement) => void = () => {}) {
+export function sortable(list: HTMLElement, itemsSelector: string, handleSelector: string, ondrop: (dragged: HTMLElement, dropOn: HTMLElement) => void = () => {}) {
   let dragged: HTMLElement | null = null
   if (list === null) {
     return
@@ -100,9 +100,7 @@ export function sortable (list: HTMLElement, itemsSelector: string, handleSelect
       let hasCurrentOver = false
 
       for (const item of list.querySelectorAll(itemsSelector) as NodeListOf<HTMLElement>) {
-
         if (item !== dragged) {
-
           item.ondragover = (e: DragEvent) => {
             e.preventDefault()
           }
@@ -140,8 +138,6 @@ export function sortable (list: HTMLElement, itemsSelector: string, handleSelect
           item.classList.remove('sort-over', 'sort-dragging')
         }
       }
-
     }
   }
-
 }

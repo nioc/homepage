@@ -10,15 +10,15 @@
     title,
     ...props
   }: {
-    value: ValueType,
-    tag?: string,
-    isInvalid?: (value: ValueType) => boolean,
-    title?: string,
-    id?: string,
-    type?: string,
-    placeholder?: string,
-    style?: string,
-    size?: number,
+    value: ValueType
+    tag?: string
+    isInvalid?: (value: ValueType) => boolean
+    title?: string
+    id?: string
+    type?: string
+    placeholder?: string
+    style?: string
+    size?: number
   } = $props()
 
   let isEditing = $state(false)
@@ -45,7 +45,13 @@
 </script>
 
 {#if isEditing}
-  <input bind:this={ref} bind:value={_value} {...props} onchange={leaveEdit} onblur={leaveEdit} aria-invalid={isInvalid(_value)} />
+  <input
+    bind:this={ref}
+    bind:value={_value}
+    {...props}
+    onchange={leaveEdit}
+    onblur={leaveEdit}
+    aria-invalid={isInvalid(_value)} />
 {:else}
   <svelte:element this={tag} class="editable">
     <span>{value}</span>

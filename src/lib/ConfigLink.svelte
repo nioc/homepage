@@ -12,8 +12,8 @@
     indexLink,
     update,
   }: {
-    link: Link,
-    indexTopic: number,
+    link: Link
+    indexTopic: number
     indexLink: number
     update: (indexTopic: number, indexLink: number, arg: Link) => void
   } = $props()
@@ -45,7 +45,8 @@
           })
           .some((word) => {
             return iconName === word
-          }))
+          }),
+        )
     }, 300)
     return () => clearTimeout(handler)
   })
@@ -58,13 +59,13 @@
 
   let iconUrls = $state([])
 
-  function parseTags () {
+  function parseTags() {
     _link.tags = tags
       .split(',')
       .map((tag) => tag.trim())
   }
 
-  async function getUrl () {
+  async function getUrl() {
     urlError = null
     try {
       let url = new URL(_link.href)
@@ -104,7 +105,9 @@
           }
           // list favicons linked
           iconUrls = []
-          head.item(0).querySelectorAll('link[rel="icon"]')
+          head
+            .item(0)
+            .querySelectorAll('link[rel="icon"]')
             .forEach((iconLink) => {
               const fetchedUrl = iconLink.getAttribute('href')
               const iconUrl = fetchedUrl.startsWith('http')
@@ -114,9 +117,7 @@
                   : fetchedUrl.startsWith('/')
                     ? `${url.origin}${fetchedUrl}` // path-absolute URL
                     : `${url.origin}/${fetchedUrl}` // path-relative URL
-              iconUrls.push(
-                new URL(iconUrl).href,
-              )
+              iconUrls.push(new URL(iconUrl).href)
             })
           isInvalidUrl = false
         } else {
@@ -140,11 +141,11 @@
     }
   }
 
-  async function fetchAndStoreIconUrl (url: string) {
+  async function fetchAndStoreIconUrl(url: string) {
     _link.iconUrl = await saveUrlFile(url, _link.name)
   }
 
-  async function saveUrlFile (url: string, filename: string) {
+  async function saveUrlFile(url: string, filename: string) {
     try {
       if (!filename) {
         throw new Error('invalid filename')
@@ -185,9 +186,8 @@
 
   fetch('./icons-list.json')
     .then((result) => result.json())
-    .then((list) => iconsList = [...new Set(list)])
+    .then((list) => (iconsList = [...new Set(list)]))
     .catch((reason) => console.warn(`Get icons list failed: ${reason}`))
-
 </script>
 
 <datalist id="target-proposals">
@@ -197,16 +197,29 @@
 
 <fieldset disabled={isFetching}>
   <label for="href">URL</label>
-  <input id="href" bind:value={_link.href} type="url" placeholder="https://service.domain.ltd/" onchange={getUrl} aria-describedby="url-helper" required aria-invalid={isInvalidUrl} />
+  <input
+    id="href"
+    bind:value={_link.href}
+    type="url"
+    placeholder="https://service.domain.ltd/"
+    onchange={getUrl}
+    aria-describedby="url-helper"
+    required
+    aria-invalid={isInvalidUrl} />
   {#if isInvalidUrl !== false}
     <small id="url-helper">Type an URL{urlError}</small>
   {/if}
 
   {#if _link.href}
     <label for="name">Name</label>
-    <input id="name" bind:value={_link.name} type="text" placeholder="Name" aria-describedby="name-helper" required aria-invalid={_link.name
-      ? false
-      : true}/>
+    <input
+      id="name"
+      bind:value={_link.name}
+      type="text"
+      placeholder="Name"
+      aria-describedby="name-helper"
+      required
+      aria-invalid={_link.name ? false : true} />
     {#if title && _link.name !== title}
       <small id="name-helper">Current url returns title: <i class="selectable">{title}</i></small>
     {/if}
@@ -214,17 +227,18 @@
     <label for="icon">Icon</label>
     <div>
       {#each iconsListMatching as icon (icon)}
-        <button class="icon-url-proposal" title="Use this icon" onclick={() => _link.icon = icon}>
+        <button class="icon-url-proposal" title="Use this icon" onclick={() => (_link.icon = icon)}>
           <Icon {icon} size={2} />
         </button>
       {/each}
     </div>
     <div class="icon-field">
-      <input id="icon" bind:value={_link.icon} type="text" placeholder="Icon" aria-invalid={iconMatching
-        ? false
-        : _link.icon
-          ? true
-          : undefined}/>
+      <input
+        id="icon"
+        bind:value={_link.icon}
+        type="text"
+        placeholder="Icon"
+        aria-invalid={iconMatching ? false : _link.icon ? true : undefined} />
       <div>
         {#if iconMatching}
           {#key iconMatching}
@@ -237,19 +251,28 @@
     <label for="iconUrl">Icon URL</label>
     <div>
       {#each iconUrls as iconUrl (iconUrl)}
-        <button class="icon-url-proposal" title="Fetch and store this icon using link name" onclick={() => fetchAndStoreIconUrl(iconUrl)}>
-          <img src={proxyBaseUrl + iconUrl} height="36" width="36" aria-hidden="true" alt={iconUrl}/>
+        <button
+          class="icon-url-proposal"
+          title="Fetch and store this icon using link name"
+          onclick={() => fetchAndStoreIconUrl(iconUrl)}>
+          <img src={proxyBaseUrl + iconUrl} height="36" width="36" aria-hidden="true" alt={iconUrl} />
         </button>
       {/each}
     </div>
     <div class="icon-field">
-      <input id="iconUrl" bind:value={_link.iconUrl} type="text" placeholder="/files/icon.svg" aria-describedby="icon-url-helper" />
-      <small id="icon-url-helper">{iconUrls.length
-        ? 'Click on an icon to download and save it'
-        : 'The file must exist in your `files` folder'}</small>
+      <input
+        id="iconUrl"
+        bind:value={_link.iconUrl}
+        type="text"
+        placeholder="/files/icon.svg"
+        aria-describedby="icon-url-helper" />
+      <small id="icon-url-helper"
+        >{iconUrls.length
+          ? 'Click on an icon to download and save it'
+          : 'The file must exist in your `files` folder'}</small>
       <div>
         <!-- svelte-ignore a11y_missing_attribute -->
-        <img src={_link.iconUrl} height="18" aria-hidden="true"/>
+        <img src={_link.iconUrl} height="18" aria-hidden="true" />
       </div>
     </div>
 
@@ -260,7 +283,13 @@
     <input id="target" bind:value={_link.target} type="text" placeholder="_blank" list="target-proposals" />
 
     <label for="tags">Tags</label>
-    <input id="tags" bind:value={tags} type="text" placeholder="new tag" aria-describedby="tags-helper" onchange={parseTags}/>
+    <input
+      id="tags"
+      bind:value={tags}
+      type="text"
+      placeholder="new tag"
+      aria-describedby="tags-helper"
+      onchange={parseTags} />
     <small id="tags-helper">Comma-separated values</small>
   {/if}
 </fieldset>

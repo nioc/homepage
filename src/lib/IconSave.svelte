@@ -4,7 +4,7 @@
   let {
     isSaved = false,
   }: {
-    isSaved?: boolean,
+    isSaved?: boolean
   } = $props()
 </script>
 

@@ -5,7 +5,7 @@
   let {
     link,
   }: {
-    link: Link,
+    link: Link
   } = $props()
 
   const {

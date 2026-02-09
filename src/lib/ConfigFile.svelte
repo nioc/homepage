@@ -17,18 +17,18 @@
     filename,
     isMerged = false,
   }: {
-    config: Config,
-    filename?: string,
-    isMerged?: boolean,
+    config: Config
+    filename?: string
+    isMerged?: boolean
   } = $props()
 
   let sortableList: HTMLElement
 
-  let editedLink: {indexTopic: number, indexLink: number} = $state(null)
+  let editedLink: { indexTopic: number, indexLink: number } = $state(null)
 
   let confirmModal: ConfirmModal = $state(null)
 
-  let message: {title: string, text: string} = $state(null)
+  let message: { title: string, text: string } = $state(null)
 
   let isSaving = $state(false)
   let isSaved = $state(false)

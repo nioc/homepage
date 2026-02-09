@@ -13,7 +13,12 @@ export default [
   ...eslintPluginSvelte.configs['flat/recommended'],
   pluginPromise.configs['flat/recommended'],
   depend.configs['flat/recommended'],
-  stylistic.configs['recommended'],
+  {
+    plugins: { stylistic },
+    rules: {
+      ...Object.fromEntries(Object.keys(stylistic.rules).map((rule) => [`stylistic/${rule}`, 'off'])),
+    },
+  },
 
   // JS/TS rules
   {
@@ -39,6 +44,7 @@ export default [
       'stylistic/padded-blocks': ['off'],
       'stylistic/function-call-argument-newline': ['error', 'consistent'],
       'stylistic/dot-location': ['error', 'property'],
+      'stylistic/newline-per-chained-call': 'off',
       'stylistic/indent': ['error', 2],
       'stylistic/lines-around-comment': ['off'],
       'stylistic/implicit-arrow-linebreak': ['off'],
@@ -48,9 +54,14 @@ export default [
       'stylistic/object-property-newline': ['off', { allowAllPropertiesOnSameLine: true }],
       'stylistic/multiline-comment-style': ['off'],
       'stylistic/no-confusing-arrow': 'off',
-      'depend/ban-dependencies': ['error', {
-        allowed: ['js-yaml'], // alternative is larger
-      }],
+      'stylistic/arrow-parens': ['error', 'always'],
+      'stylistic/brace-style': ['error', '1tbs', { allowSingleLine: true }],
+      'depend/ban-dependencies': [
+        'error',
+        {
+          allowed: ['js-yaml'], // alternative is larger
+        },
+      ],
     },
   },
 
@@ -81,6 +92,7 @@ export default [
       'stylistic/padded-blocks': ['off'],
       'stylistic/function-call-argument-newline': ['error', 'consistent'],
       'stylistic/dot-location': ['error', 'property'],
+      'stylistic/newline-per-chained-call': 'off',
       'stylistic/indent': ['error', 2],
       'stylistic/lines-around-comment': ['off'],
       'stylistic/implicit-arrow-linebreak': ['off'],
@@ -90,9 +102,15 @@ export default [
       'stylistic/object-property-newline': ['off', { allowAllPropertiesOnSameLine: true }],
       'stylistic/multiline-comment-style': ['off'],
       'stylistic/no-confusing-arrow': 'off',
-      'depend/ban-dependencies': ['error', {
-        allowed: ['js-yaml'], // alternative is larger
-      }],
+      'stylistic/arrow-parens': ['error', 'always'],
+      'stylistic/brace-style': ['error', '1tbs', { allowSingleLine: true }],
+      'svelte/brace-style': 'off',
+      'depend/ban-dependencies': [
+        'error',
+        {
+          allowed: ['js-yaml'], // alternative is larger
+        },
+      ],
     },
   },
 ]

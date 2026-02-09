@@ -6,11 +6,11 @@
     displaySearch,
     topics,
   }: {
-    displaySearch: boolean,
-    topics: Topic[],
+    displaySearch: boolean
+    topics: Topic[]
   } = $props()
 
-  function sortTopicsAndLinks (topics: Topic[]) {
+  function sortTopicsAndLinks(topics: Topic[]) {
     const _topics = structuredClone($state.snapshot(topics))
     _topics.sort(sortItems)
     _topics.forEach((topic) => topic.links.sort(sortItems))
@@ -45,7 +45,7 @@
 {#if displaySearch}
   <div>
     <input bind:value={search} type="search" placeholder="Search" />
-    <button onclick={() => search = ''} aria-label="Clear search"></button>
+    <button onclick={() => (search = '')} aria-label="Clear search"></button>
   </div>
 {/if}
 

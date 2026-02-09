@@ -7,4 +7,5 @@ module.exports = {
   svelteAllowShorthand: true,
   svelteBracketNewLine: false,
   svelteIndentScriptAndStyle: true,
+  overrides: [{ files: '*.svelte', options: { embeddedLanguageFormatting: 'off' } }],
 }

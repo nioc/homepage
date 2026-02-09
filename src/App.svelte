@@ -12,7 +12,7 @@
   let isConfigMode = $state(false)
   let isReady = $state(false)
 
-  async function fetchConfig (fileName: string) {
+  async function fetchConfig(fileName: string) {
     try {
       return await fetchConfigFile(fileName)
     } catch (error) {
@@ -24,7 +24,7 @@
     }
   }
 
-  async function setTrianglify (seed: string, isDark: boolean) {
+  async function setTrianglify(seed: string, isDark: boolean) {
     const trianglify = (await import('@victorioberra/trianglify-browser/dist/trianglify.bundle.js')).default
     const chroma = (await import('chroma-js')).default
     const backgroundColor = getComputedStyle(document.body).getPropertyValue('--hp-background-color')
@@ -133,7 +133,7 @@
 
 <main>
   {#if isConfigMode}
-    <ConfigComponent/>
+    <ConfigComponent />
   {/if}
   {#if isReady}
     {#if config.displayTitle}
@@ -144,6 +144,6 @@
       <pre class="error">{message}</pre>
     {/if}
 
-    <Home displaySearch={config.displaySearch} topics={config.topics}/>
+    <Home displaySearch={config.displaySearch} topics={config.topics} />
   {/if}
 </main>

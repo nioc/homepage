@@ -6,7 +6,7 @@
     icon,
     size = 1,
   }: {
-    icon: string,
+    icon: string
     size: number
   } = $props()
 
@@ -43,5 +43,5 @@
   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
   {@html svgElement.outerHTML}
 {:else}
-  <svg width="{svgSize}" height="{svgSize}" />
+  <svg width={svgSize} height={svgSize} />
 {/if}
