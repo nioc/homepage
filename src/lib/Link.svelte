@@ -7,29 +7,20 @@
   }: {
     link: Link
   } = $props()
-
-  const {
-    href,
-    name,
-    iconUrl,
-    icon = null,
-    target = '_blank',
-    tags = [],
-  } = link
 </script>
 
-<a {href} class="app" title="{name} ({href})" {target} rel="noreferrer">
-  {#if iconUrl}
+<a href={link.href} class="app" title="{link.name} ({link.href})" target={link.target} rel="noreferrer">
+  {#if link.iconUrl}
     <!-- svelte-ignore a11y_missing_attribute -->
-    <img src={iconUrl} height="36" aria-hidden="true"/>
+    <img src={link.iconUrl} height="36" aria-hidden="true" />
   {:else}
-    <Icon {icon} size={2} />
+    <Icon icon={link.icon} size={2} />
   {/if}
   <div class="app-content">
-    <h3>{name}</h3>
-    {#if tags}
+    <h3>{link.name}</h3>
+    {#if link.tags}
       <div class="tags">
-        {#each tags as tag (tag)}
+        {#each link.tags as tag (tag)}
           <small class="tag">{tag}</small>
         {/each}
       </div>

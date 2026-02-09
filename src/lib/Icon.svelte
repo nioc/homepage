@@ -12,7 +12,7 @@
 
   let isReady = $state(false)
   let svgElement: HTMLElement = $state(undefined)
-  const svgSize = (18 * size).toString()
+  const svgSize = $derived((18 * size).toString())
 
   onMount(async () => {
     try {

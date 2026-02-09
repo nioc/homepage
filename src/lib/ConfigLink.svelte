@@ -18,6 +18,7 @@
     update: (indexTopic: number, indexLink: number, arg: Link) => void
   } = $props()
 
+  // svelte-ignore state_referenced_locally
   let _link: Link = $state(structuredClone($state.snapshot(link)))
 
   let iconsList = $state([])
