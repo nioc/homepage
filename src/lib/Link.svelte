@@ -9,7 +9,7 @@
   } = $props()
 </script>
 
-<a href={link.href} class="app" title="{link.name} ({link.href})" target={link.target} rel="noreferrer">
+<a href={link.href} class="app" title="{link.name} ({link.href})" target={link.target || '_blank' } rel="noreferrer">
   {#if link.iconUrl}
     <!-- svelte-ignore a11y_missing_attribute -->
     <img src={link.iconUrl} height="36" aria-hidden="true" />
