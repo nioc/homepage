@@ -27,9 +27,60 @@ jobs:
       - name: Generate changelog from git commits
         id: git-changelog
         run: |
-          echo 'changelog<<EOF' >> $GITHUB_OUTPUT
-          git log $(git tag |tail -2 | head -1).. --pretty=format:"- %s %n%w(150,2,2)%b" >> $GITHUB_OUTPUT
-          echo 'EOF' >> $GITHUB_OUTPUT
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          CURR_TAG="${GITHUB_REF_NAME}"
+
+          if [ -z "$PREV_TAG" ]; then
+            RANGE=""
+          else
+            RANGE="$PREV_TAG..$CURR_TAG"
+          fi
+          echo "Range: $RANGE"
+
+          TMPFILE=$(mktemp)
+
+          add_section() {
+            local title="$1"
+            local pattern="$2"
+            local commits
+            commits=$(git log $RANGE --pretty=format:'%s %h' | grep "^$pattern" || true)
+            if [ -n "$commits" ]; then
+              echo "### $title" >> "$TMPFILE"
+              echo "$commits" \
+                | sed -E "s/^$pattern\(([^\)]+)\): /\[\1\] /" \
+                | sed -E "s/^$pattern: //" \
+                | sed 's/^/- /' \
+                >> "$TMPFILE"
+              echo >> "$TMPFILE"
+            fi
+          }
+
+          add_section "💡 Features" "feat"
+          add_section "🪲 Bug fixes" "fix"
+          add_section "🛠️ Refactors" "refactor"
+          add_section "🧹 Chores" "chore"
+          add_section "📚 Docs" "docs"
+          add_section "🚀 CI/CD" "ci"
+
+          if ! grep -q "### " "$TMPFILE"; then
+            echo "_No changes in this release_" >> "$TMPFILE"
+            echo >> "$TMPFILE"
+          fi
+
+          echo "**Full Changelog**: https://github.com/$GITHUB_REPOSITORY/compare/$PREV_TAG...$CURR_TAG " >> "$TMPFILE"
+
+          CHANGELOG=$(cat "$TMPFILE")
+          CHANGELOG_ESCAPED=$(printf "%s" "$CHANGELOG" \
+            | sed -e 's/%/%25/g' \
+                  -e 's/\r/%0D/g' \
+                  -e ':a;N;$!ba;s/\n/%0A/g')
+
+          echo "raw<<EOF" >> "$GITHUB_OUTPUT"
+          cat "$TMPFILE" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+          echo "Changelog:"
+          cat "$TMPFILE"
 
       - name: Setup Node.js 20
         uses: actions/setup-node@v4
@@ -61,20 +112,8 @@ jobs:
       - name: Draft Github release with archive
         uses: softprops/action-gh-release@v2
         with:
-          draft: true
           files: homepage-${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}.tar.gz
-          body: |
-            ### Commits
-
-            ${{ steps.git-changelog.outputs.changelog }}
-
-            ### :warning: Breaking changes
-
-            ### :bulb: Features
-
-            ### :beetle: Bug fixes
-
-            ### :wrench: Technical
+          body: ${{ steps.git-changelog.outputs.raw }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
