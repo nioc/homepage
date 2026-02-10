@@ -293,6 +293,15 @@ body:has(.app:focus) .app:not(:focus) {
   background-color: rgb(from var(--hp-element-background-color) r g b / 0.6);
 }
 
+@media (hover: none) {
+  body:has(.app:hover) .app:not(:hover) {
+    opacity: inherit;
+  }
+  .app:hover {
+    background-color: rgb(from var(--hp-element-background-color) r g b / 0.4);
+  }
+}
+
 .with-tags {
   .tags {
     display: flex;

@@ -40,6 +40,18 @@
           .filter((topic) => topic.links.length > 0),
       ),
   )
+
+  const clearFocus = () => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      clearFocus()
+    }
+  })
 </script>
 
 {#if displaySearch}
