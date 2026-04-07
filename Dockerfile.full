@@ -6,7 +6,7 @@ WORKDIR /homepage-build
 
 # get package and install dependencies
 COPY package*.json ./
-RUN npm ci
+RUN pnpm install --frozen-lockfile
 
 # copy src files (exluding files defined in .dockerignore)
 COPY src/ ./src/
@@ -21,11 +21,11 @@ COPY svelte.config.js ./svelte.config.js
 COPY postcss.config.cjs ./postcss.config.cjs
 
 # build icons
-RUN npm run build-icons
+RUN pnpm run build-icons
 
 # build app
 ENV VITE_TITLE=Homepage
-RUN npm run build
+RUN pnpm run build
 
 ####################################
 ### serve app
