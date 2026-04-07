@@ -95,31 +95,39 @@
             .parseFromString(await response.text(), 'text/html')
             .getElementsByTagName('head')
           // try to set link name from title
-          title = head
-            .item(0)
-            .querySelectorAll('title')[0]
-            .text
-            .replaceAll('\t', ' ')
-            .trim()
-          if (!_link.name) {
-            _link.name = title
+          try {
+            title = head
+              .item(0)
+              .querySelectorAll('title')[0]
+              .text
+              .replaceAll('\t', ' ')
+              .trim()
+            if (!_link.name) {
+              _link.name = title
+            }
+          } catch (error) {
+            console.warn(error.message)
           }
           // list favicons linked
           iconUrls = []
-          head
-            .item(0)
-            .querySelectorAll('link[rel="icon"]')
-            .forEach((iconLink) => {
-              const fetchedUrl = iconLink.getAttribute('href')
-              const iconUrl = fetchedUrl.startsWith('http')
-                ? fetchedUrl // absolute URL
-                : fetchedUrl.startsWith('//')
-                  ? `${url.protocol}${fetchedUrl}` // scheme-relative URL
-                  : fetchedUrl.startsWith('/')
-                    ? `${url.origin}${fetchedUrl}` // path-absolute URL
-                    : `${url.origin}/${fetchedUrl}` // path-relative URL
-              iconUrls.push(new URL(iconUrl).href)
-            })
+          try {
+            head
+              .item(0)
+              .querySelectorAll('link[rel="icon"]')
+              .forEach((iconLink) => {
+                const fetchedUrl = iconLink.getAttribute('href')
+                const iconUrl = fetchedUrl.startsWith('http')
+                  ? fetchedUrl // absolute URL
+                  : fetchedUrl.startsWith('//')
+                    ? `${url.protocol}${fetchedUrl}` // scheme-relative URL
+                    : fetchedUrl.startsWith('/')
+                      ? `${url.origin}${fetchedUrl}` // path-absolute URL
+                      : `${url.origin}/${fetchedUrl}` // path-relative URL
+                iconUrls.push(new URL(iconUrl).href)
+              })
+          } catch (error) {
+            console.warn(error.message)
+          }
           isInvalidUrl = false
         } else {
           isInvalidUrl = true
