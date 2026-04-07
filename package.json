@@ -21,6 +21,7 @@
     "build": "vite build",
     "preview": "vite preview"
   },
+  "packageManager": "pnpm@10.24.0",
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^9.39.4",
