@@ -38,7 +38,7 @@ Light, simple but attractive and customizable home page to your favorite service
 - displays link icon either:
   - via the [Simple Icons](https://simpleicons.org/) list (colored icon)
   - via the [Pictogrammers Material Design Icons](https://pictogrammers.com/library/mdi/) list (monochromatic icon)
-  - or via a link-specific url
+  - or via a link-specific url (using link favicon or [Self-Hosted Dashboard Icons](https://selfh.st/icons/))
 - handle user preference for light or dark mode (`prefers-color-scheme`)
 - nice background using [Trianglify](https://github.com/qrohlf/trianglify) (requires additional JS file to be loaded)
 - responsive

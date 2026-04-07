@@ -38,7 +38,7 @@
     // "components/accordion": true, // [admin] for YAML content
     // "components/card": true, // [admin] for modal
     'components/dropdown': false,
-    'components/group': false,
+    // 'components/group': true,
     'components/loading': false,
     // "components/modal": true, // [admin] for modal
     'components/nav': false,
@@ -451,6 +451,10 @@ table {
   tr.subtitle td {
     background-color: rgb(from var(--pico-background-color) r g b/0.3);
   }
+}
+
+[role="group"]:has(input:not([type="submit"], [type="button"]):focus) button {
+    box-shadow: 0 0 12px 3px var(--hp-element-border-color);
 }
 
 // expandable

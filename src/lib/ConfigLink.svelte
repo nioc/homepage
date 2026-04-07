@@ -60,6 +60,14 @@
 
   let iconUrls = $state([])
 
+  let externalIconSearched = $state(null)
+
+  let externalIconUrl = $state(null)
+
+  let externalIconOk = $state(false)
+
+  let userIconOk = $state(undefined)
+
   function parseTags() {
     _link.tags = tags
       .split(',')
@@ -154,6 +162,15 @@
     _link.iconUrl = await saveUrlFile(url, _link.name)
   }
 
+  function getSelfHostedIcon() {
+    const searched = externalIconSearched
+      .replace(/[^a-zA-Z0-9]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+      .toLowerCase()
+    externalIconUrl = `https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/${searched}.svg`
+  }
+
   async function saveUrlFile(url: string, filename: string) {
     try {
       if (!filename) {
@@ -234,6 +251,9 @@
     {/if}
 
     <label for="icon">Icon</label>
+    <p><small>Icon can be set using the link name or using returned favicon (the latter requires downloading the favicon and will take precedence)</small></p>
+
+    <small>Search link name in <a href="https://simpleicons.org/" target="_blank" rel="noreferrer" style="padding: 0;">Simple Icons</a> and <a href="https://pictogrammers.com/library/mdi/" target="_blank" rel="noreferrer" style="padding: 0;">Pictogrammers Material Design Icons</a></small>
     <div>
       {#each iconsListMatching as icon (icon)}
         <button class="icon-url-proposal" title="Use this icon" onclick={() => (_link.icon = icon)}>
@@ -257,7 +277,22 @@
       </div>
     </div>
 
-    <label for="iconUrl">Icon URL</label>
+    <small>Search icon in <a href="https://selfh.st/icons/" target="_blank" rel="noreferrer" style="padding: 0;">Self-Hosted Dashboard Icons</a></small>
+    <!-- svelte-ignore a11y_no_redundant_roles -->
+    <fieldset role="group">
+      <input type="text" placeholder="Search for icon" bind:value={externalIconSearched} />
+      <button onclick={getSelfHostedIcon}><Icon icon="search-web" size={1} /></button>
+    </fieldset>
+    <div>
+      <button
+        class="icon-url-proposal"
+        title="Fetch and store this icon using link name"
+        style={externalIconOk ? 'display: block' : 'display: none;'}
+        onclick={() => fetchAndStoreIconUrl(externalIconUrl)}>
+        <img src={externalIconUrl} height="36" width="36" aria-hidden="true" alt={externalIconUrl} onload={() => externalIconOk = true} onerror={() => externalIconOk = false}/>
+      </button>
+    </div>
+
     <div>
       {#each iconUrls as iconUrl (iconUrl)}
         <button
@@ -274,6 +309,7 @@
         bind:value={_link.iconUrl}
         type="text"
         placeholder="/files/icon.svg"
+        aria-invalid={_link.iconUrl ? !userIconOk : undefined}
         aria-describedby="icon-url-helper" />
       <small id="icon-url-helper"
         >{iconUrls.length
@@ -281,7 +317,7 @@
           : 'The file must exist in your `files` folder'}</small>
       <div>
         <!-- svelte-ignore a11y_missing_attribute -->
-        <img src={_link.iconUrl} height="18" aria-hidden="true" />
+        <img src={_link.iconUrl} height="18" aria-hidden="true" onload={() => userIconOk = true} onerror={() => userIconOk = false}/>
       </div>
     </div>
 
