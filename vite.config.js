@@ -13,6 +13,7 @@ export default defineConfig({
     }),
   ],
   server: {
+    host: '0.0.0.0',
     proxy: {
       '/proxy/': 'http://localhost:8081',
       '/uploads/': 'http://localhost:8081',
@@ -21,7 +22,7 @@ export default defineConfig({
     },
   },
   build: {
-    chunkSizeWarningLimit: 80,
+    chunkSizeWarningLimit: 180,
   },
   preview: {
     port: 5173,
