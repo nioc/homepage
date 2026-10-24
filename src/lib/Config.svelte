@@ -20,11 +20,11 @@
   })
 
   const fetchConfig = async () => {
-    const configFile = await fetchConfigFile('app')
+    const configFile = await fetchConfigFile('app', false)
     configFilesObj['app'] = configFile
     for (const filename of getAdditionalFiles(configFile)) {
       try {
-        const configFile = await fetchConfigFile(filename)
+        const configFile = await fetchConfigFile(filename, false)
         if (configFile) {
           configFilesObj[filename] = configFile
         }

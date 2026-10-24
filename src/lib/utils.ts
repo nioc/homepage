@@ -1,7 +1,7 @@
 import type { Config, Link, Topic } from '../types/config'
 import { load } from 'js-yaml'
 
-export async function fetchConfigFile(fileName: string) {
+export async function fetchConfigFile(fileName: string, onlyActive = false) {
   const response = await fetch(`./conf/${fileName}.yml`)
   const configApp: Config = load(await response.text(), {
     onWarning: (e) => console.warn(e),
@@ -10,7 +10,14 @@ export async function fetchConfigFile(fileName: string) {
     throw new Error('parsing error, check server response')
   }
   configApp.topics.forEach((topic) => {
+    if (onlyActive) {
+      topic.links = topic.links.filter((link) => link.isActive || link.isActive === undefined)
+    }
     topic.links.forEach((link) => {
+      if (link.isActive === undefined) {
+        // handle migration to v1.3, should be removed in a future version
+        link.isActive = true
+      }
       if (link.tags === undefined) {
         link.tags = []
       }

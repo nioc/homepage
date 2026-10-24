@@ -18,6 +18,7 @@ export type Topic = {
 }
 export type Link = {
   name: string
+  isActive?: boolean
   order?: number
   iconUrl?: string
   icon?: string

@@ -144,6 +144,7 @@
           ? 1
           : 2}></th>
         <th scope="col">Name</th>
+        <th scope="col">Active</th>
         <th scope="col" class="expand">URL</th>
         <th scope="col">Tags</th>
         <th scope="col">Order</th>
@@ -180,6 +181,7 @@
               {/if}
             </td>
             <td>{link.name}</td>
+            <td><input type="checkbox" role="switch" bind:checked={link.isActive} disabled={isMerged}/></td>
             <td>{link.href}</td>
             <td>{link.tags?.join(', ')}</td>
             <td>{link.order}</td>

@@ -14,7 +14,7 @@
 
   async function fetchConfig(fileName: string) {
     try {
-      return await fetchConfigFile(fileName)
+      return await fetchConfigFile(fileName, true)
     } catch (error) {
       const errorMessage = `An error occurred while processing "conf/${fileName}.yml" file: ${error.message}`
       console.warn(errorMessage)
